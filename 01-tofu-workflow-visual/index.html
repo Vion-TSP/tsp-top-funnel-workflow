@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TSP TOFU Test Plan — Visual Workflows</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f1117; color: #e1e4e8; line-height: 1.6; padding: 40px 20px; }
+  .container { max-width: 1100px; margin: 0 auto; }
+  h1 { font-size: 28px; font-weight: 700; margin-bottom: 8px; color: #fff; }
+  .subtitle { color: #8b949e; font-size: 15px; margin-bottom: 40px; }
+  h2 { font-size: 20px; font-weight: 600; color: #fff; margin: 40px 0 16px; padding-top: 20px; border-top: 1px solid #21262d; }
+  h2:first-of-type { border-top: none; margin-top: 0; }
+  h3 { font-size: 16px; font-weight: 600; color: #c9d1d9; margin: 24px 0 12px; }
+  p { color: #8b949e; font-size: 14px; margin-bottom: 16px; }
+  .section-label { display: inline-block; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; padding: 4px 10px; border-radius: 4px; margin-bottom: 16px; }
+  .label-overview { background: #1f2937; color: #60a5fa; }
+  .label-testa { background: #1a2332; color: #58a6ff; }
+  .label-testb { background: #1a2b1a; color: #56d364; }
+  .label-testc { background: #2d1f1a; color: #f0883e; }
+  .label-measure { background: #2d1f1a; color: #f0883e; }
+  .label-subseg { background: #2a1f2d; color: #bc8cff; }
+  .label-todo { background: #1a2b1a; color: #56d364; }
+
+  .flow { display: flex; flex-direction: column; gap: 0; align-items: center; margin: 20px 0; }
+  .flow-row { display: flex; align-items: center; gap: 12px; width: 100%; justify-content: center; flex-wrap: wrap; }
+  .flow-node { padding: 14px 20px; border-radius: 10px; font-size: 13px; font-weight: 500; text-align: center; min-width: 160px; max-width: 260px; position: relative; }
+  .flow-node.blue { background: #1a2b4a; border: 1px solid #2d4a7a; color: #7db8f5; }
+  .flow-node.green { background: #1a2b1a; border: 1px solid #2a4a2a; color: #56d364; }
+  .flow-node.orange { background: #2d1f1a; border: 1px solid #4a3020; color: #f0883e; }
+  .flow-node.purple { background: #2a1f2d; border: 1px solid #3d2d4a; color: #bc8cff; }
+  .flow-node.red { background: #2d1a1a; border: 1px solid #4a2020; color: #f85149; }
+  .flow-node.gray { background: #161b22; border: 1px solid #30363d; color: #8b949e; }
+  .flow-node.white { background: #1c2128; border: 2px solid #58a6ff; color: #fff; font-weight: 600; }
+  .flow-node.highlight { background: #1a2b4a; border: 2px solid #58a6ff; color: #fff; }
+  .flow-node small { display: block; font-size: 11px; color: #8b949e; margin-top: 4px; font-weight: 400; }
+
+  .arrow-down { width: 2px; height: 28px; background: #30363d; margin: 0 auto; position: relative; }
+  .arrow-down::after { content: ''; position: absolute; bottom: -5px; left: -4px; width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 6px solid #30363d; }
+
+  .split-container { display: flex; gap: 16px; width: 100%; justify-content: center; margin: 16px 0; }
+  .split-branch { display: flex; flex-direction: column; align-items: center; gap: 0; flex: 1; max-width: 340px; }
+  .split-branch .branch-label { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; padding: 3px 8px; border-radius: 4px; }
+
+  /* Timeline - horizontal bar style */
+  .tl-container { margin: 16px 0 24px; }
+  .tl-label { font-size: 13px; font-weight: 600; margin-bottom: 6px; padding: 3px 8px; border-radius: 4px; display: inline-block; }
+  .tl-label.a { color: #58a6ff; background: #1a2332; }
+  .tl-label.b { color: #56d364; background: #1a2b1a; }
+  .tl-label.c { color: #f0883e; background: #2d1f1a; }
+  .tl-bar { display: flex; height: 40px; border-radius: 6px; overflow: hidden; margin-bottom: 4px; }
+  .tl-seg { display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 500; padding: 0 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .tl-seg.setup { background: #161b22; color: #8b949e; border-right: 1px solid #21262d; }
+  .tl-seg.ads { background: #1a2b4a; color: #7db8f5; border-right: 1px solid #2d4a7a; }
+  .tl-seg.emails { background: #1a2b1a; color: #56d364; border-right: 1px solid #2a4a2a; }
+  .tl-seg.calls { background: #1c3a1c; color: #7ee787; border-right: 1px solid #2a4a2a; }
+  .tl-seg.follow { background: #2a1f2d; color: #bc8cff; border-right: 1px solid #3d2d4a; }
+  .tl-seg.measure { background: #2d1f1a; color: #f0883e; }
+  .tl-seg.idle { background: #0d1117; color: #484f58; border-right: 1px solid #21262d; }
+  .tl-weeks { display: flex; font-size: 10px; color: #484f58; margin-bottom: 12px; }
+  .tl-weeks span { flex: 1; text-align: center; }
+
+  .segment-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin: 16px 0; }
+  .seg-card { background: #161b22; border: 1px solid #21262d; border-radius: 10px; padding: 18px; }
+  .seg-card .seg-tag { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; padding: 3px 8px; border-radius: 4px; display: inline-block; margin-bottom: 10px; }
+  .seg-card.i1 .seg-tag { background: #1a2b4a; color: #58a6ff; }
+  .seg-card.i2 .seg-tag { background: #2d2a1a; color: #e3b341; }
+  .seg-card.i3 .seg-tag { background: #2a1f2d; color: #bc8cff; }
+  .seg-card h4 { font-size: 14px; color: #e1e4e8; margin-bottom: 6px; }
+  .seg-card .trigger { font-size: 12px; color: #8b949e; font-style: italic; margin-bottom: 10px; }
+  .seg-card ul { list-style: none; padding: 0; }
+  .seg-card li { font-size: 12px; color: #c9d1d9; padding: 4px 0; padding-left: 16px; position: relative; }
+  .seg-card li::before { content: '→'; position: absolute; left: 0; color: #484f58; }
+
+  .metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 16px 0; }
+  .metric-card { background: #161b22; border: 1px solid #21262d; border-radius: 8px; padding: 16px; text-align: center; }
+  .metric-card .metric-label { font-size: 11px; color: #8b949e; text-transform: uppercase; letter-spacing: 0.5px; }
+  .metric-card .metric-value { font-size: 22px; font-weight: 700; margin: 6px 0; }
+  .metric-card .metric-sub { font-size: 11px; color: #484f58; }
+  .metric-card.blue .metric-value { color: #58a6ff; }
+  .metric-card.green .metric-value { color: #56d364; }
+  .metric-card.orange .metric-value { color: #f0883e; }
+
+  .key { display: flex; gap: 20px; flex-wrap: wrap; margin: 12px 0; padding: 12px 16px; background: #161b22; border-radius: 8px; border: 1px solid #21262d; }
+  .key-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #8b949e; }
+  .key-dot { width: 10px; height: 10px; border-radius: 3px; }
+  .key-dot.blue { background: #1a2b4a; border: 1px solid #2d4a7a; }
+  .key-dot.green { background: #1a2b1a; border: 1px solid #2a4a2a; }
+  .key-dot.orange { background: #2d1f1a; border: 1px solid #4a3020; }
+  .key-dot.purple { background: #2a1f2d; border: 1px solid #3d2d4a; }
+  .key-dot.gray { background: #161b22; border: 1px solid #30363d; }
+
+  .note { background: #161b22; border-left: 3px solid #58a6ff; padding: 12px 16px; border-radius: 0 6px 6px 0; margin: 16px 0; font-size: 13px; color: #c9d1d9; }
+  .note strong { color: #fff; }
+
+  /* To-do section */
+  .todo-group { background: #161b22; border: 1px solid #21262d; border-radius: 10px; padding: 20px; margin: 16px 0; }
+  .todo-group h4 { font-size: 14px; color: #e1e4e8; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+  .todo-group h4 .tag { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; padding: 2px 6px; border-radius: 3px; }
+  .todo-group ul { list-style: none; padding: 0; }
+  .todo-group li { font-size: 12px; color: #c9d1d9; padding: 5px 0; padding-left: 20px; position: relative; border-bottom: 1px solid #0d1117; }
+  .todo-group li:last-child { border-bottom: none; }
+  .todo-group li::before { content: '☐'; position: absolute; left: 0; color: #484f58; font-size: 13px; }
+  .todo-group li.section-head { padding-left: 0; color: #8b949e; font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: none; padding-top: 12px; }
+  .todo-group li.section-head::before { content: ''; }
+
+  @media (max-width: 768px) {
+    .split-container { flex-direction: column; align-items: center; }
+    .flow-row { flex-direction: column; }
+    .metrics-grid { grid-template-columns: 1fr; }
+    .segment-cards { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>TSP TOFU Test Plan — Visual Workflows</h1>
+<p class="subtitle">Three parallel tests to find the best outbound sequence. Ad-assisted vs cold-only.</p>
+
+<div class="key">
+  <div class="key-item"><div class="key-dot blue"></div> LinkedIn Ads / Awareness</div>
+  <div class="key-item"><div class="key-dot green"></div> Outbound (Emails / Calls)</div>
+  <div class="key-item"><div class="key-dot orange"></div> Measurement / Decision</div>
+  <div class="key-item"><div class="key-dot purple"></div> Sub-segment Workflows</div>
+  <div class="key-item"><div class="key-dot gray"></div> Setup / Infrastructure</div>
+</div>
+
+<!-- ===== SECTION 1: OVERALL ARCHITECTURE ===== -->
+<h2>1. Overall Test Architecture</h2>
+<span class="section-label label-overview">Big Picture</span>
+<p>One Clay list of 3,000, split into three equal groups. Tests A and B get LinkedIn ads. Test C is the live control — no ads, starts calling from Week 1.</p>
+
+<div class="flow">
+  <div class="flow-node white">Clay List: ~3,000 Contacts<small>ICP: Post-seed B2B founders, UK, 5-50 employees</small></div>
+  <div class="arrow-down"></div>
+  <div class="flow-node gray">Random Split into 3 groups<small>Same ICP criteria, no cherry-picking, no overlap</small></div>
+  <div class="arrow-down"></div>
+
+  <div class="split-container">
+    <div class="split-branch">
+      <div class="branch-label" style="color:#58a6ff; background:#1a2332;">TEST A — 1,000</div>
+      <div class="flow-node blue">LinkedIn Ads (2-3 weeks)<small>TLAs + Video + Image</small></div>
+      <div class="arrow-down"></div>
+      <div class="flow-node green">Cold Emails (4 emails)<small>Week 3 — to ALL contacts</small></div>
+      <div class="arrow-down"></div>
+      <div class="flow-node green">Cold Calls<small>Week 4 — to ALL contacts</small></div>
+    </div>
+
+    <div class="split-branch">
+      <div class="branch-label" style="color:#56d364; background:#1a2b1a;">TEST B — 1,000</div>
+      <div class="flow-node blue">LinkedIn Ads (2-3 weeks)<small>TLAs + Video + Image</small></div>
+      <div class="arrow-down"></div>
+      <div class="flow-node green">Cold Calls<small>Week 3+ — to ALL</small></div>
+      <div class="arrow-down"></div>
+      <div class="flow-node purple">Interested? → Immediately enter sequence<small>Segmented: I1/I2/I3</small></div>
+    </div>
+
+    <div class="split-branch">
+      <div class="branch-label" style="color:#f0883e; background:#2d1f1a;">TEST C — 1,000 (CONTROL)</div>
+      <div class="flow-node gray" style="border-style:dashed;">NO Ads. NO waiting.<small>Calls start Week 1</small></div>
+      <div class="arrow-down"></div>
+      <div class="flow-node green">Cold Calls<small>Week 1+ — start immediately</small></div>
+      <div class="arrow-down"></div>
+      <div class="flow-node green">Email follow-up to interested<small>After each call</small></div>
+    </div>
+  </div>
+
+  <div class="arrow-down"></div>
+  <div class="flow-node orange">Compare Results: Test A vs Test B vs Test C<small>If A or B outperform C → the ads made the difference</small></div>
+</div>
+
+<div class="note">
+  <strong>The hypothesis:</strong> Founders who've seen TSP's brand in LinkedIn ads before outreach will convert at a higher rate than cold-only (Test C).
+</div>
+<div class="note" style="border-left-color: #e3b341;">
+  <strong>⚠️ TO DO:</strong> Session with Tom Tigwell to validate warm-up timing, budget, and audience size before finalising timeline.
+</div>
+
+<!-- ===== SECTION 2: SEPARATE TIMELINES ===== -->
+<h2>2. Timelines — Per Test</h2>
+<span class="section-label label-overview">Each Test Has Its Own Track</span>
+
+<div class="tl-weeks">
+  <span>Week 1</span><span>Week 2</span><span>Week 3</span><span>Week 4</span><span>Week 5</span>
+</div>
+
+<div class="tl-container">
+  <div class="tl-label a">TEST A: Ads → Emails → Calls</div>
+  <div class="tl-bar">
+    <div class="tl-seg setup" style="flex:1;">Setup</div>
+    <div class="tl-seg ads" style="flex:2;">LinkedIn Ads running</div>
+    <div class="tl-seg emails" style="flex:1;">Emails launch</div>
+    <div class="tl-seg calls" style="flex:1;">Calls + follow-ups</div>
+    <div class="tl-seg measure" style="flex:0.5;">Results</div>
+  </div>
+</div>
+
+<div class="tl-container">
+  <div class="tl-label b">TEST B: Ads → Calls → Emails (interested)</div>
+  <div class="tl-bar">
+    <div class="tl-seg setup" style="flex:1;">Setup</div>
+    <div class="tl-seg ads" style="flex:2;">LinkedIn Ads running</div>
+    <div class="tl-seg calls" style="flex:1.5;">Calls start → emails fire per call</div>
+    <div class="tl-seg measure" style="flex:0.5;">Results</div>
+  </div>
+</div>
+
+<div class="tl-container">
+  <div class="tl-label c">TEST C: No Ads → Calls → Emails (control)</div>
+  <div class="tl-bar">
+    <div class="tl-seg calls" style="flex:4;">Calls start immediately (Week 1) → emails fire per call → follow-ups</div>
+    <div class="tl-seg measure" style="flex:1;">Results</div>
+  </div>
+</div>
+
+<div class="note">
+  <strong>Key difference:</strong> Test C starts calling from <strong>Week 1</strong> — no ads, no waiting. This is TSP's current playbook running live. Tests A and B wait for 2-3 weeks of ad warm-up before outbound starts.
+</div>
+
+<!-- ===== SECTION 3: TEST A ===== -->
+<h2>3. Test A: Ads → Emails → Calls</h2>
+<span class="section-label label-testa">Detailed Flow</span>
+<p>Everyone gets ads, then everyone gets emails, then everyone gets called.</p>
+
+<div class="flow">
+  <div class="flow-node gray">1,000 contacts from Clay<small>Tagged "Test A" in HubSpot</small></div>
+  <div class="arrow-down"></div>
+  <div class="flow-node blue">LinkedIn Ads — Weeks 1-3<small>60% TLAs + 30% video + 10% image<br>Target: 8-10 impressions per person</small></div>
+  <div class="arrow-down"></div>
+  <div class="flow-node green">Email 1 (Week 3, Day 0): "[Company] sales?"<small>Best-performing cold email variant</small></div>
+  <div class="arrow-down"></div>
+  <div class="flow-node green">Email 2 (Day 3) → Email 3 (Day 7) → Email 4 (Day 12)<small>Value add → Social proof → Soft close</small></div>
+  <div class="arrow-down"></div>
+  <div class="flow-node highlight">Cold Calls — Week 4<small>Call ALL 1,000. Tag every outcome.</small></div>
+  <div class="arrow-down"></div>
+  <div class="flow-row">
+    <div class="flow-node green">Meeting Booked ✓</div>
+    <div class="flow-node gray">Interested → Follow up</div>
+    <div class="flow-node red">Not Interested / No Answer</div>
+  </div>
+</div>
+
+<!-- ===== SECTION 4: TEST B ===== -->
+<h2>4. Test B: Ads → Calls → Emails (Interested Only)</h2>
+<span class="section-label label-testb">Detailed Flow</span>
+<p>Everyone gets ads, then everyone gets called. Only interested leads get tailored email sequences — immediately after each call.</p>
+
+<div class="flow">
+  <div class="flow-node gray">1,000 contacts from Clay<small>Tagged "Test B" in HubSpot</small></div>
+  <div class="arrow-down"></div>
+  <div class="flow-node blue">LinkedIn Ads — Weeks 1-3<small>Same creative as Test A</small></div>
+  <div class="arrow-down"></div>
+  <div class="flow-node highlight">Cold Calls — Week 3+<small>Call ALL 1,000. SDR tags TYPE of interest after EACH call.</small></div>
+  <div class="arrow-down"></div>
+  <div class="flow-row">
+    <div class="flow-node green" style="min-width:110px;">Meeting ✓<small>→ Pipeline</small></div>
+    <div class="flow-node purple" style="min-width:110px;">I1: Pain Point<small>"Struggling with X"</small></div>
+    <div class="flow-node purple" style="min-width:110px;">I2: Bad Timing<small>"Not right now"</small></div>
+    <div class="flow-node purple" style="min-width:110px;">I3: Wrong Person<small>"I'll pass this on"</small></div>
+    <div class="flow-node red" style="min-width:110px;">Not Interested<small>/ No Answer</small></div>
+  </div>
+  <div class="arrow-down"></div>
+  <div class="flow-node purple">⚡ IMMEDIATELY enters sub-segment email sequence<small>Tag triggers it right after the call. Sequence runs from that moment.</small></div>
+</div>
+
+<!-- ===== SECTION 5: TEST C ===== -->
+<h2>5. Test C: No Ads → Calls → Emails (Live Control)</h2>
+<span class="section-label label-testc">Control Group — Current TSP Playbook</span>
+<p>No ads, no waiting. Build the list, start calling <strong>from Week 1</strong>. Interested leads get email follow-up after each call.</p>
+
+<div class="flow">
+  <div class="flow-node gray">1,000 contacts from Clay<small>Tagged "Test C" in HubSpot</small></div>
+  <div class="arrow-down"></div>
+  <div class="flow-node gray" style="border-style:dashed;">NO LinkedIn Ads — NO waiting<small>First touch = the phone call</small></div>
+  <div class="arrow-down"></div>
+  <div class="flow-node highlight">Cold Calls — Week 1+<small>Start immediately. Call ALL 1,000.</small></div>
+  <div class="arrow-down"></div>
+  <div class="flow-row">
+    <div class="flow-node green" style="min-width:140px;">Meeting Booked ✓<small>→ Pipeline</small></div>
+    <div class="flow-node green" style="min-width:140px;">Interested<small>→ Email follow-up</small></div>
+    <div class="flow-node red" style="min-width:140px;">Not Interested / No Answer</div>
+  </div>
+  <div class="arrow-down"></div>
+  <div class="flow-node green">Email follow-up fires after each call<small>Design TBD: sub-segmented (like Test B) or simpler generic sequence</small></div>
+</div>
+
+<div class="note">
+  <strong>Why Test C starts Week 1:</strong> This is how TSP works today — no warm-up period. By the time Tests A and B start outbound (Week 3), Test C will already have 2 weeks of call data. The comparison at Week 5 measures conversion rates, not timing.
+</div>
+
+<!-- ===== SECTION 6: SUB-SEGMENTS ===== -->
+<h2>6. Interested Lead Sub-Segments</h2>
+<span class="section-label label-subseg">Test B + C Email Workflows (To Be Designed)</span>
+
+<div class="segment-cards">
+  <div class="seg-card i1">
+    <div class="seg-tag">I1: Has a Pain Point</div>
+    <h4>"Yes, we're struggling with [X]"</h4>
+    <div class="trigger">HubSpot tag: interested_pain_point</div>
+    <ul>
+      <li><strong>Tone:</strong> Direct, pain-specific</li>
+      <li><strong>Cadence:</strong> Fast — Day 0, 3, 7</li>
+      <li><strong>TO DO:</strong> Define pain point hypotheses</li>
+      <li><strong>TO DO:</strong> Map pains to content</li>
+      <li><strong>TO DO:</strong> Write email copy</li>
+    </ul>
+  </div>
+  <div class="seg-card i2">
+    <div class="seg-tag">I2: Bad Timing</div>
+    <h4>"Sounds good but not right now"</h4>
+    <div class="trigger">HubSpot tag: interested_bad_timing</div>
+    <ul>
+      <li><strong>Tone:</strong> Warm, zero pressure</li>
+      <li><strong>Cadence:</strong> Slow — Day 0, 14, 30+</li>
+      <li><strong>TO DO:</strong> Track timeline mechanism</li>
+      <li><strong>TO DO:</strong> Nurture content selection</li>
+      <li><strong>TO DO:</strong> Write email copy</li>
+    </ul>
+  </div>
+  <div class="seg-card i3">
+    <div class="seg-tag">I3: Wrong Person</div>
+    <h4>"I'll pass this to my co-founder"</h4>
+    <div class="trigger">HubSpot tag: interested_wrong_person</div>
+    <ul>
+      <li><strong>Tone:</strong> Forwardable, exec-friendly</li>
+      <li><strong>Cadence:</strong> Medium — Day 0, 5, 10</li>
+      <li><strong>TO DO:</strong> Create exec TSP summary</li>
+      <li><strong>TO DO:</strong> DM outreach approach</li>
+      <li><strong>TO DO:</strong> Write email copy</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ===== SECTION 7: SDR TAGGING ===== -->
+<h2>7. SDR Call Tagging Process</h2>
+<span class="section-label label-testb">What SDRs Do After Every Call (All 3 Tests)</span>
+
+<div class="flow">
+  <div class="flow-node highlight">SDR completes a cold call</div>
+  <div class="arrow-down"></div>
+  <div class="flow-node gray">Open contact in HubSpot → Update <code>tofu_call_outcome</code></div>
+  <div class="arrow-down"></div>
+  <div class="flow-row" style="gap:8px;">
+    <div class="flow-node green" style="min-width:130px;font-size:12px;">meeting_booked<small>✓ Booked</small></div>
+    <div class="flow-node purple" style="min-width:130px;font-size:12px;">interested_pain_point<small>📝 Log pain in notes</small></div>
+    <div class="flow-node purple" style="min-width:130px;font-size:12px;">interested_bad_timing<small>📅 Note when</small></div>
+    <div class="flow-node purple" style="min-width:130px;font-size:12px;">interested_wrong_person<small>👤 Note DM name</small></div>
+    <div class="flow-node red" style="min-width:130px;font-size:12px;">not_interested<small>Close out</small></div>
+    <div class="flow-node gray" style="min-width:130px;font-size:12px;">no_answer<small>Retry queue</small></div>
+  </div>
+</div>
+
+<!-- ===== SECTION 8: AD CREATIVE ===== -->
+<h2>8. LinkedIn Ad Creative Mix</h2>
+<span class="section-label label-testa">Tests A + B Only</span>
+
+<div class="segment-cards">
+  <div class="seg-card i1">
+    <div class="seg-tag" style="background:#1a2b4a;color:#58a6ff;">60% — Thought Leader Ads</div>
+    <h4>Sully's Posts (Promoted)</h4>
+    <ul>
+      <li>"80% of first sales hires fail"</li>
+      <li>"The Founder Sales Trap"</li>
+      <li>"What investors question first"</li>
+      <li><strong>$2.29/click</strong> (vs $13.23 image)</li>
+    </ul>
+  </div>
+  <div class="seg-card i2">
+    <div class="seg-tag" style="background:#2d2a1a;color:#e3b341;">30% — Short Video</div>
+    <h4>Sully Talking Head (15 sec)</h4>
+    <ul>
+      <li>"Most founders are stuck doing sales themselves..."</li>
+      <li>Authentic, not polished</li>
+      <li><strong>Lowest CPM</strong> ($38.94)</li>
+    </ul>
+  </div>
+  <div class="seg-card i3">
+    <div class="seg-tag" style="background:#2a1f2d;color:#bc8cff;">10% — Image Ad</div>
+    <h4>Stat Graphic</h4>
+    <ul>
+      <li>"0.6% of UK B2B businesses make it to £10m"</li>
+      <li>Clean, branded — Canva</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ===== SECTION 9: MEASUREMENT ===== -->
+<h2>9. How We Measure Success</h2>
+<span class="section-label label-measure">Week 5 — All 3 Tests Compared</span>
+
+<div class="metrics-grid">
+  <div class="metric-card blue">
+    <div class="metric-label">Primary Metric</div>
+    <div class="metric-value">% Meetings Booked</div>
+    <div class="metric-sub">Meetings ÷ Total Contacts × 100</div>
+  </div>
+  <div class="metric-card green">
+    <div class="metric-value">Lift vs Control (C)</div>
+    <div class="metric-sub">(Test Rate - C Rate) ÷ C Rate</div>
+  </div>
+  <div class="metric-card orange">
+    <div class="metric-value">£ per Meeting</div>
+    <div class="metric-sub">Ad Spend ÷ Incremental Meetings</div>
+  </div>
+</div>
+
+<h3>Decision Framework</h3>
+<div class="segment-cards" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+  <div class="seg-card i1">
+    <h4 style="color:#56d364;">A or B > C</h4>
+    <p style="font-size:12px;color:#8b949e;">Ads outperform control</p>
+    <p style="font-size:12px;color:#56d364;">→ Ads work. Scale winner.</p>
+  </div>
+  <div class="seg-card i1">
+    <h4 style="color:#56d364;">A > B > C</h4>
+    <p style="font-size:12px;color:#8b949e;">Emails first best</p>
+    <p style="font-size:12px;color:#56d364;">→ Scale Test A</p>
+  </div>
+  <div class="seg-card i2">
+    <h4 style="color:#e3b341;">A ≈ B ≈ C</h4>
+    <p style="font-size:12px;color:#8b949e;">Ads didn't help</p>
+    <p style="font-size:12px;color:#e3b341;">→ Save ad spend</p>
+  </div>
+  <div class="seg-card i3">
+    <h4 style="color:#f85149;">C > A and B</h4>
+    <p style="font-size:12px;color:#8b949e;">Something went wrong</p>
+    <p style="font-size:12px;color:#f85149;">→ Diagnose</p>
+  </div>
+</div>
+
+<!-- ===== SECTION 10: MOFU ===== -->
+<h2>10. MOFU — Middle of Funnel (Interested Lead Nurture)</h2>
+<span class="section-label label-subseg">30-90 Day Nurture for Leads That Don't Convert Immediately</span>
+<p>Any lead that comes out of TOFU as "interested" but doesn't book a meeting enters MOFU. Same sub-segment strategy (I1/I2/I3) — just extended over a longer timeframe with multiple channels.</p>
+
+<div class="flow">
+  <div class="flow-node purple">Lead exits TOFU as "Interested"<small>Completed initial post-call sequence but didn't convert</small></div>
+  <div class="arrow-down"></div>
+  <div class="flow-node purple">Enters MOFU Nurture (30-90 days)<small>Extended sequences based on their sub-segment</small></div>
+  <div class="arrow-down"></div>
+  <div class="flow-row">
+    <div class="flow-node blue" style="min-width:200px;">Email Sequences<small>Fortnightly or monthly drip<br>Content, insights, soft CTAs</small></div>
+    <div class="flow-node blue" style="min-width:200px;">LinkedIn Touchpoints<small>Profile views, post engagement<br>Connection requests</small></div>
+    <div class="flow-node blue" style="min-width:200px;">Content Drips<small>Thought leadership, case studies<br>Market insights</small></div>
+  </div>
+  <div class="arrow-down"></div>
+  <div class="flow-row">
+    <div class="flow-node green" style="min-width:200px;">Engagement signal fires<small>Replies, clicks 3+ links, visits website</small></div>
+    <div class="flow-node red" style="min-width:200px;">No engagement for 90 days<small>Re-engage or archive</small></div>
+  </div>
+  <div class="arrow-down"></div>
+  <div class="flow-node green">Escalate to sales for personal follow-up<small>Or move to BOFU signal tracking</small></div>
+</div>
+
+<h3>MOFU by Sub-Segment</h3>
+<div class="segment-cards">
+  <div class="seg-card i1">
+    <div class="seg-tag">I1: Pain Point → MOFU</div>
+    <h4>Monthly value content addressing their pain</h4>
+    <ul>
+      <li><strong>Cadence:</strong> Monthly email + quarterly personal check-in</li>
+      <li><strong>Channels:</strong> Email + LinkedIn engagement</li>
+      <li><strong>Content:</strong> Pain-specific articles, case studies, market data</li>
+      <li><strong>Exit:</strong> Replies or engages → back to sales</li>
+    </ul>
+  </div>
+  <div class="seg-card i2">
+    <div class="seg-tag">I2: Bad Timing → MOFU</div>
+    <h4>Stay visible until their stated timeline</h4>
+    <ul>
+      <li><strong>Cadence:</strong> Monthly content, resurface at stated timeline</li>
+      <li><strong>Channels:</strong> Email + LinkedIn</li>
+      <li><strong>Trigger:</strong> Funding round, job posting, or their stated "next quarter"</li>
+      <li><strong>Exit:</strong> Timeline arrives → personal reach-out</li>
+    </ul>
+  </div>
+  <div class="seg-card i3">
+    <div class="seg-tag">I3: Wrong Person → MOFU</div>
+    <h4>Try new angles to reach the decision-maker</h4>
+    <ul>
+      <li><strong>Cadence:</strong> Monthly to original contact + new DM attempts</li>
+      <li><strong>Channels:</strong> Email + LinkedIn direct to DM</li>
+      <li><strong>Content:</strong> Exec-friendly summaries, different value angles</li>
+      <li><strong>Exit:</strong> DM engages → sales takes over</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ===== SECTION 11: BOFU ===== -->
+<h2>11. BOFU — Bottom of Funnel (Discovery Stage Signal Tracking)</h2>
+<span class="section-label label-measure">Live Signal Monitoring via Clay + Automation</span>
+<p>Any lead at <strong>Discovery stage</strong> (had a call, considering TSP) enters BOFU. We track live signals for their company via Clay and automation — when a trigger fires, sales gets alerted to strike at exactly the right moment.</p>
+
+<div class="flow">
+  <div class="flow-node orange">Lead at Discovery Stage in HubSpot<small>Had a call, considering TSP, hasn't committed</small></div>
+  <div class="arrow-down"></div>
+  <div class="flow-node orange">Clay + Automation monitors LIVE SIGNALS<small>Funding, hiring, leadership changes, growth, re-engagement</small></div>
+  <div class="arrow-down"></div>
+  <div class="flow-row" style="gap:8px;">
+    <div class="flow-node orange" style="min-width:130px;font-size:12px;">New funding<small>Series A/B raised</small></div>
+    <div class="flow-node orange" style="min-width:130px;font-size:12px;">Sales job posting<small>Building sales team</small></div>
+    <div class="flow-node orange" style="min-width:130px;font-size:12px;">New CRO/VP Sales<small>Leadership change</small></div>
+    <div class="flow-node orange" style="min-width:130px;font-size:12px;">Headcount jump<small>20%+ growth</small></div>
+    <div class="flow-node orange" style="min-width:130px;font-size:12px;">TSP re-engagement<small>Website visit / LI</small></div>
+  </div>
+  <div class="arrow-down"></div>
+  <div class="flow-node highlight">TRIGGER FIRES<small>Automated alert → sales person + HubSpot task created</small></div>
+  <div class="arrow-down"></div>
+  <div class="flow-node green">Sales person follows up with timely, relevant message<small>"Congrats on the raise — when we spoke in [month], you mentioned [X]..."</small></div>
+</div>
+
+<div class="note">
+  <strong>Goal:</strong> Turn "not right now" into "actually, let's talk" — at exactly the right moment. BOFU is about <strong>timing</strong>, not volume.
+</div>
+
+<div class="note" style="border-left-color: #e3b341;">
+  <strong>⚠️ KEY TO-DO:</strong> Define the signal list — which specific triggers do we track for companies at Discovery stage? This needs a session with the team. Start with the top 3-5 highest-value signals.
+</div>
+
+<!-- ===== SECTION 12: BUDGET ===== -->
+<h2>12. Budget & Effort</h2>
+
+<div class="metrics-grid">
+  <div class="metric-card blue">
+    <div class="metric-label">Ad Spend (Total)</div>
+    <div class="metric-value">£220–420</div>
+    <div class="metric-sub">Tests A+B only. Test C = £0</div>
+  </div>
+  <div class="metric-card green">
+    <div class="metric-label">Setup Hours</div>
+    <div class="metric-value">65–95 hrs</div>
+    <div class="metric-sub">TOFU (3 tests) + MOFU + BOFU setup</div>
+  </div>
+  <div class="metric-card orange">
+    <div class="metric-label">Total Duration</div>
+    <div class="metric-value">5 Weeks</div>
+    <div class="metric-sub">Test C starts Week 1. Results Week 5.</div>
+  </div>
+</div>
+
+<div class="note" style="border-left-color: #56d364;">
+  <strong>If it works:</strong> A £220-420 experiment proves whether ad-assisted outbound is 2-4x better. You then run the winning playbook on every Clay list going forward.
+</div>
+
+<!-- ===== SECTION 13: TASK SUMMARY BY WORKSTREAM ===== -->
+<h2>13. Task Summary by Workstream</h2>
+<span class="section-label label-todo">From TSP Growth Strategy Planning Sheet — 51 Tasks Across 6 Phases</span>
+
+<div class="note" style="border-left-color: #58a6ff;">
+  <strong>Full detailed version with owners, deadlines, and sub-tasks:</strong><br>
+  <span style="color: #58a6ff;">📊 Google Sheets → TSP - Onboarding, Strategy & Tracking → "planning" tab</span><br>
+  <span style="color: #58a6ff;">📂 Notion → TSP Growth Strategy → Project Tracker (51 tasks, 12 workstreams)</span>
+</div>
+
+<h3 style="color:#58a6ff;">Phase 0 — Foundations (7 tasks, P1)</h3>
+<div class="todo-group">
+  <h4><span class="tag" style="background:#161b22;color:#8b949e;">LIST BUILDING</span></h4>
+  <ul>
+    <li>Build Clay list — 3,000 contacts matching ICP</li>
+    <li>Split into 3 groups (A/B/C, 1,000 each)</li>
+    <li>Upload to HubSpot with test group tags</li>
+    <li>Set up tofu_call_outcome property</li>
+    <li>Set up tracking dashboard</li>
+  </ul>
+</div>
+<div class="todo-group">
+  <h4><span class="tag" style="background:#1a2b4a;color:#58a6ff;">LINKEDIN ADS</span></h4>
+  <ul>
+    <li>Session with Tom Tigwell — validate timing, budget, audience size</li>
+    <li>Upload matched audiences to LinkedIn Campaign Manager</li>
+  </ul>
+</div>
+
+<h3 style="color:#56d364;">Phase 1 — Creative & Sequence Design (11 tasks, P1-P2)</h3>
+<div class="todo-group">
+  <h4><span class="tag" style="background:#1a2b4a;color:#58a6ff;">AD CREATIVE</span></h4>
+  <ul>
+    <li>Write 3 TLA posts for Sully</li>
+    <li>Get Sully to post organically</li>
+    <li>Film 1 short video (15 sec)</li>
+    <li>Create stat graphic in Canva</li>
+  </ul>
+</div>
+<div class="todo-group">
+  <h4><span class="tag" style="background:#1a2332;color:#58a6ff;">TEST A EMAILS</span></h4>
+  <ul>
+    <li>Design + build 4-email sequence (review Emails A-G, decide cadence/platform/sender/format)</li>
+  </ul>
+</div>
+<div class="todo-group">
+  <h4><span class="tag" style="background:#1a2b1a;color:#56d364;">TEST B STRATEGY</span></h4>
+  <ul>
+    <li>Run strategy session — map all call outcomes, validate sub-segments</li>
+    <li>Define pain point hypotheses for I1</li>
+    <li>Decide sequence design per sub-segment (channel, cadence, content)</li>
+  </ul>
+</div>
+<div class="todo-group">
+  <h4><span class="tag" style="background:#1a2b1a;color:#56d364;">TEST B SEQUENCES</span></h4>
+  <ul>
+    <li>Design I1 (pain point) sequence</li>
+    <li>Design I2 (bad timing) sequence</li>
+    <li>Design I3 (wrong person) sequence</li>
+    <li>Identify content gaps across segments</li>
+    <li>Write email copy for all sequences</li>
+    <li>Build sequences in chosen platform</li>
+  </ul>
+</div>
+
+<h3 style="color:#f0883e;">Phase 2 — Launch Prep (6 tasks, P1-P2)</h3>
+<div class="todo-group">
+  <h4><span class="tag" style="background:#1a2b4a;color:#58a6ff;">LINKEDIN ADS</span></h4>
+  <ul>
+    <li>Set up 2 campaigns with creatives</li>
+    <li>Set frequency caps + daily budgets</li>
+    <li>Launch ads (Week 1)</li>
+  </ul>
+</div>
+<div class="todo-group">
+  <h4><span class="tag" style="background:#2d1f1a;color:#f0883e;">TEST C CONTROL</span></h4>
+  <ul>
+    <li>Decide: sub-segmented or generic follow-up?</li>
+  </ul>
+</div>
+<div class="todo-group">
+  <h4><span class="tag" style="background:#161b22;color:#8b949e;">SDR BRIEFING</span></h4>
+  <ul>
+    <li>Brief SDR team on all 3 tests + tagging process</li>
+    <li>Test C calls start from Week 1</li>
+  </ul>
+</div>
+
+<h3 style="color:#f85149;">Phase 3 — Execution (11 tasks, P2-P3)</h3>
+<div class="todo-group">
+  <h4><span class="tag" style="background:#1a2b4a;color:#58a6ff;">AD MONITORING</span></h4>
+  <ul>
+    <li>Monitor delivery daily (first 3 days critical)</li>
+    <li>Swap creative day 10-12 if fatiguing</li>
+    <li>Check matched audience delivery</li>
+  </ul>
+</div>
+<div class="todo-group">
+  <h4><span class="tag" style="background:#1a2b1a;color:#56d364;">OUTBOUND EXECUTION</span></h4>
+  <ul>
+    <li>Launch Test A emails (Week 3)</li>
+    <li>Launch Test B calls (Week 3) — sequences auto-fire</li>
+    <li>Test C calls continue</li>
+    <li>Launch Test A calls (Week 4)</li>
+    <li>Tag ALL outcomes consistently (all 3 tests)</li>
+    <li>Follow up on all interested leads</li>
+    <li>Monitor Test B + C email sequences</li>
+    <li>Weekly check-in — don't change mid-test</li>
+  </ul>
+</div>
+
+<h3 style="color:#bc8cff;">Phase 4 — Measure & Decide (4 tasks, P3)</h3>
+<div class="todo-group">
+  <h4><span class="tag" style="background:#2d1f1a;color:#f0883e;">MEASUREMENT</span></h4>
+  <ul>
+    <li>Pull all data from HubSpot + LinkedIn CM</li>
+    <li>Calculate conversion rates (A vs B vs C)</li>
+    <li>Write results report</li>
+    <li>Present to team — scale or kill</li>
+  </ul>
+</div>
+
+<h3 style="color:#bc8cff;">Phase 5 — MOFU/BOFU Scale (12 tasks, P4)</h3>
+<div class="todo-group">
+  <h4><span class="tag" style="background:#2a1f2d;color:#bc8cff;">MOFU NURTURE</span></h4>
+  <ul>
+    <li>Design MOFU extension per sub-segment</li>
+    <li>Define LinkedIn touchpoint process</li>
+    <li>Design 30-90 day content drip</li>
+    <li>Build MOFU email sequences</li>
+    <li>Define escalation triggers</li>
+    <li>Define 90-day exit criteria</li>
+  </ul>
+</div>
+<div class="todo-group">
+  <h4><span class="tag" style="background:#2d1f1a;color:#f0883e;">BOFU SIGNAL TRACKING</span></h4>
+  <ul>
+    <li><strong>Define signal list — SESSION NEEDED</strong></li>
+    <li>Set up Clay signal tracking</li>
+    <li>Build alert workflow (signal → email + task)</li>
+    <li>Design follow-up templates per signal</li>
+    <li>Define which companies enter BOFU</li>
+    <li>Test end-to-end</li>
+  </ul>
+</div>
+
+<div class="note" style="border-left-color: #e3b341; margin-top: 20px;">
+  <strong>All 51 tasks with owners, deadlines, and sub-task breakdowns are tracked in:</strong><br>
+  📊 <a href="https://docs.google.com/spreadsheets/d/1gbcIpgL5f-qzQ8AQoTpDX3_N3_x2p_w_8L4pVNhH1-4/edit#gid=2074530639" style="color:#58a6ff;">Google Sheets → "planning" tab</a><br>
+  📂 <a href="https://www.notion.so/3da3aaa90e6e487db7d4026541bc990d" style="color:#58a6ff;">Notion → Project Tracker (database with filters/views)</a>
+</div>
+
+</div>
+</body>
+</html>

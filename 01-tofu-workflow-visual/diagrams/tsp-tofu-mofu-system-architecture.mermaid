@@ -1,0 +1,102 @@
+%% TSP TOFU/MOFU System Architecture
+%% Shows how Clay, HubSpot, Instantly, LinkedIn, Connect & Sell integrate
+%% for the full-funnel growth engine: ad warm-up → outbound → nurture → signals
+%% Prompt to reproduce: "Create a system architecture diagram showing TSP's GTM tech stack
+%% and how data flows between Clay (enrichment), LinkedIn Campaign Manager (ads),
+%% Instantly/Smartlead (cold email), Connect & Sell (dialler), HubSpot CRM (Sales Enterprise),
+%% and Slack for the TOFU/MOFU/BOFU funnel. Include the MOFU nurture sub-segments (I1/I2/I3)
+%% and signal-based BOFU alerts. Reference: TSP-GTM-Tech-Stack.md, TSP-Marketing-Plan-2026-Q1.md"
+
+graph TB
+
+    %% ─── Styles ───
+    classDef clay fill:#7C3AED,stroke:#5B21B6,color:#fff,stroke-width:2px
+    classDef linkedin fill:#0A66C2,stroke:#004182,color:#fff,stroke-width:2px
+    classDef outbound fill:#EA580C,stroke:#C2410C,color:#fff,stroke-width:2px
+    classDef hubspot fill:#FF7A59,stroke:#E05A3A,color:#fff,stroke-width:2px
+    classDef workflow fill:#F59E0B,stroke:#D97706,color:#1a1a1a,stroke-width:2px
+    classDef nurture fill:#059669,stroke:#047857,color:#fff,stroke-width:2px
+    classDef bofu fill:#DC2626,stroke:#B91C1C,color:#fff,stroke-width:2px
+    classDef slack fill:#4A154B,stroke:#3B1040,color:#fff,stroke-width:2px
+    classDef webflow fill:#146EF5,stroke:#0D5BD9,color:#fff,stroke-width:2px
+    classDef phase fill:none,stroke:#94a3b8,stroke-width:2px,stroke-dasharray:5 5,color:#64748b
+
+    %% ─── CLAY: Command Centre ───
+    CLAY["🏗️ <b>CLAY</b><br/><i>Command Centre</i><br/>──────────────<br/>• List building from Crunchbase<br/>• Data enrichment<br/>• Intent signal monitoring<br/>• Lead scoring engine<br/>• Audience segmentation"]:::clay
+
+    %% ─── TOFU PHASE ───
+    subgraph TOFU["⬆️ TOFU — Top of Funnel"]
+        direction LR
+        LI["🎯 <b>LinkedIn Campaign Mgr</b><br/>──────────────<br/>• Thought Leader Ads 60%<br/>• Short video ads 30%<br/>• Image ads 10%<br/>• Target: 8-10 impressions<br/>• Budget: ~£220-420"]:::linkedin
+
+        INST["📧 <b>Instantly / Smartlead</b><br/>──────────────<br/>• High-volume cold email<br/>• Burner domains<br/>• A/B test sequences<br/>• TOFU only — not nurture"]:::outbound
+
+        CAS["📞 <b>Connect & Sell</b><br/>──────────────<br/>• Parallel dialler<br/>• ~13-14% conversation rate<br/>• SDR tags outcomes<br/>• I1 / I2 / I3 classification"]:::outbound
+    end
+
+    %% ─── HUBSPOT CRM ───
+    HS["🟠 <b>HubSpot CRM</b><br/><i>Sales Hub Enterprise</i><br/>──────────────<br/>• Source of truth for contacts<br/>• Deal pipeline tracking<br/>• Contact properties & tagging<br/>• Trigger-based workflows<br/>• Meeting booking"]:::hubspot
+
+    %% ─── MOFU PHASE ───
+    subgraph MOFU["🔄 MOFU — Middle of Funnel"]
+        direction TB
+        WF["⚙️ <b>HubSpot Workflows</b><br/><i>Enterprise feature</i><br/>──────────────<br/>• Trigger: contact property change<br/>• Auto-enrol in sequences<br/>• Segment by I1 / I2 / I3"]:::workflow
+
+        subgraph SEQS["Nurture Sequences"]
+            direction LR
+            I1["🔥 <b>I1: Pain Point</b><br/>4 emails → push to call<br/><i>'Yes, we're struggling'</i>"]:::nurture
+            I2["⏰ <b>I2: Bad Timing</b><br/>Stay warm, resurface<br/><i>'Not now, maybe later'</i>"]:::nurture
+            I3["👤 <b>I3: Wrong Person</b><br/>Forwardable content<br/><i>'Let me pass this on'</i>"]:::nurture
+            GEN["📨 <b>General Nurture</b><br/>8 emails over 80 days<br/><i>From Sully's mailbox</i>"]:::nurture
+        end
+    end
+
+    %% ─── BOFU PHASE ───
+    subgraph BOFU["🎯 BOFU — Bottom of Funnel"]
+        direction LR
+        SIGNALS["📡 <b>Clay Signal Monitor</b><br/>──────────────<br/>• New funding round<br/>• Sales team hiring<br/>• Leadership changes<br/>• Competitor signals<br/>• Re-engagement activity"]:::bofu
+        ALERT["🔔 <b>Sales Alerts</b><br/>──────────────<br/>• HubSpot task created<br/>• Slack notification<br/>• Lead score threshold<br/>• Meeting booked → Deal"]:::bofu
+    end
+
+    %% ─── SLACK ───
+    SLACK["💬 <b>Slack</b><br/>MQL alerts · Meeting notifications"]:::slack
+
+    %% ─── WEBFLOW ───
+    WEB["🌐 <b>Webflow</b><br/>thesalespeople.co<br/><i>Future: forms, tracking code</i>"]:::webflow
+
+    %% ─── DATA FLOWS ───
+
+    %% Clay outputs
+    CLAY -->|"① CSV matched audience<br/>(LinkedIn URLs)"| LI
+    CLAY -->|"② Verified email lists"| INST
+    CLAY -->|"③ Enriched contacts<br/>(native integration)"| HS
+    CLAY -->|"④ Phone lists"| CAS
+
+    %% TOFU → HubSpot
+    INST -->|"⑥ Reply signals<br/>(webhook/manual)"| HS
+    CAS -->|"⑤ Call outcomes<br/>(SDR tags I1/I2/I3)"| HS
+
+    %% HubSpot → MOFU
+    HS -->|"⑦ Property change<br/>triggers workflow"| WF
+    WF --> I1
+    WF --> I2
+    WF --> I3
+    WF --> GEN
+
+    %% Nurture → back to HubSpot
+    I1 -->|"Engagement signals"| HS
+    I2 -->|"Engagement signals"| HS
+    I3 -->|"Engagement signals"| HS
+    GEN -->|"Engagement signals"| HS
+
+    %% BOFU
+    CLAY -->|"⑧ Intent signals<br/>(webhook)"| SIGNALS
+    SIGNALS --> ALERT
+    ALERT -->|"⑨ MQL alerts"| SLACK
+    ALERT -->|"Task + deal"| HS
+
+    %% Website
+    WEB -.->|"Future: form fills<br/>tracking code"| HS
+
+    %% LinkedIn retargeting
+    HS -.->|"Future: retargeting<br/>audiences"| LI
