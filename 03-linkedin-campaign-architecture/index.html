@@ -1,0 +1,2673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>TSP Account-Based LinkedIn Architecture</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#08080d;color:#d8d8e4;padding:24px 32px;line-height:1.6;max-width:1400px;margin:0 auto}
+h1{font-size:26px;color:#fff;margin-bottom:4px}
+.sub{color:#777;font-size:14px;margin-bottom:28px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:28px}
+.card{background:#111118;border:1px solid #222;border-radius:10px;padding:16px}
+.card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.card-title{font-size:14px;font-weight:700;color:#ccc}
+.card-big{font-size:32px;font-weight:800;line-height:1.1}
+.card-label{font-size:11px;color:#666;text-transform:uppercase;letter-spacing:.5px}
+.blue{color:#5b9aff}.green{color:#4ae68a}.orange{color:#ffaa5b}.purple{color:#b07aff}.red{color:#ff6a6a}
+.section{margin-bottom:32px}
+.section-title{font-size:20px;font-weight:700;color:#fff;margin-bottom:4px;display:flex;align-items:center;gap:8px}
+.section-desc{color:#777;font-size:13px;margin-bottom:16px}
+.campaign-card{background:#111118;border:1px solid #222;border-radius:12px;overflow:hidden;margin-bottom:20px}
+.campaign-header{padding:16px 20px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;transition:background .2s}
+.campaign-header:hover{background:rgba(255,255,255,0.02)}
+.campaign-name{font-size:16px;font-weight:700}
+.campaign-stats{display:flex;gap:16px;font-size:12px;color:#888}
+.campaign-stat{display:flex;align-items:center;gap:4px}
+.campaign-stat strong{color:#ccc}
+.campaign-body{padding:0 20px 20px;display:none}
+.campaign-body.open{display:block}
+.c1 .campaign-header{border-left:4px solid #5b9aff}
+.c2 .campaign-header{border-left:4px solid #4ae68a}
+.c3 .campaign-header{border-left:4px solid #ffaa5b}
+.c4 .campaign-header{border-left:4px solid #b07aff}
+.subsection{margin-top:16px;margin-bottom:12px}
+.subsection-title{font-size:13px;font-weight:700;color:#999;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+table{width:100%;border-collapse:collapse;font-size:12px;margin-bottom:12px}
+th{text-align:left;padding:8px 10px;background:rgba(255,255,255,0.03);color:#888;font-weight:600;font-size:10px;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid #222}
+td{padding:8px 10px;border-bottom:1px solid rgba(255,255,255,0.04);vertical-align:top}
+.tag{display:inline-block;padding:2px 7px;border-radius:4px;font-size:10px;font-weight:600;margin:1px}
+.t-tla{background:#2a1a40;color:#b07aff}
+.t-video{background:#402a1a;color:#ffaa5b}
+.t-image{background:#1a3040;color:#5bc0ff}
+.t-carousel{background:#1a4020;color:#5bff8a}
+.t-text{background:#222;color:#999}
+.t-poll{background:#3a3a1a;color:#e0d05b}
+.t-doc{background:#1a2a40;color:#5b8aff}
+.t-article{background:#40201a;color:#ff7a5b}
+.data-tag{display:inline-block;padding:1px 5px;border-radius:3px;font-size:10px;background:rgba(255,255,255,0.05);color:#777;margin-right:3px}
+.tla-card{background:#111118;border:1px solid #222;border-radius:12px;margin-bottom:20px;overflow:hidden}
+.tla-header{padding:14px 20px;display:flex;justify-content:space-between;align-items:flex-start;border-bottom:1px solid #1a1a24;cursor:pointer;transition:background .2s}
+.tla-header:hover{background:rgba(255,255,255,0.02)}
+.tla-id{font-size:18px;font-weight:800;margin-right:10px}
+.tla-title{font-size:13px;font-weight:700;color:#ccc;flex:1}
+.tla-meta{font-size:11px;color:#555;margin-top:3px}
+.tla-body{padding:0 20px 16px;display:none}
+.tla-body.open{display:block}
+.linkedin-mock{background:#0a0a12;border:1px solid #1a1a2a;border-radius:8px;padding:20px;font-size:13.5px;line-height:1.85;color:#ddd;white-space:pre-wrap;margin-top:12px}
+.linkedin-mock strong{color:#fff}
+.tla-evidence{padding:10px 16px;background:rgba(255,255,255,0.02);border-top:1px solid #1a1a24;font-size:11px;color:#666;margin-top:12px;border-radius:0 0 8px 8px}
+.tla-evidence .data-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:6px}
+.tla-section-break{text-align:center;padding:14px;color:#444;font-size:11px;text-transform:uppercase;letter-spacing:1px;margin:8px 0}
+.insight-box{background:rgba(91,154,255,0.06);border:1px solid rgba(91,154,255,0.15);border-radius:6px;padding:12px 16px;font-size:12px;color:#99bbdd;margin-bottom:12px}
+.insight-box.green-bg{background:rgba(74,230,138,0.06);border-color:rgba(74,230,138,0.15);color:#88ccaa}
+.insight-box.orange-bg{background:rgba(255,170,91,0.06);border-color:rgba(255,170,91,0.15);color:#ccaa88}
+.insight-box.purple-bg{background:rgba(176,122,255,0.06);border-color:rgba(176,122,255,0.15);color:#aa99cc}
+.quote{font-style:italic;color:#aaa;border-left:2px solid #333;padding-left:10px;margin:6px 0}
+.badge{display:inline-block;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700}
+.b-blue{background:#1a2540;color:#5b9aff;border:1px solid #2a4a7a}
+.b-green{background:#1a4030;color:#4ae68a;border:1px solid #2a6a4a}
+.b-orange{background:#402a1a;color:#ffaa5b;border:1px solid #6a4a2a}
+.b-purple{background:#2a1a40;color:#b07aff;border:1px solid #4a2a7a}
+.flow-row{display:flex;align-items:center;gap:8px;margin:8px 0;font-size:12px}
+.flow-step{background:#1a1a24;border:1px solid #333;border-radius:6px;padding:6px 12px;font-size:11px}
+.flow-arrow{color:#555;font-size:14px}
+.note{background:rgba(255,200,50,0.05);border:1px solid rgba(255,200,50,0.12);border-radius:6px;padding:10px 14px;font-size:12px;color:#bba866;margin-bottom:16px}
+.toggle-btn{background:rgba(255,255,255,0.06);border:1px solid #333;color:#aaa;padding:4px 12px;border-radius:4px;font-size:11px;cursor:pointer;margin-left:auto}
+.toggle-btn:hover{background:rgba(255,255,255,0.1)}
+.filter-box{background:rgba(255,255,255,0.03);border:1px solid #222;border-radius:6px;padding:10px 14px;font-size:12px;margin-bottom:8px}
+.filter-label{font-size:10px;color:#666;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.filter-value{color:#ccc}
+
+details.section-dropdown {
+  background: #111118;
+  border: 1px solid #222;
+  border-radius: 10px;
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+details.section-dropdown > summary {
+  padding: 14px 20px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background 0.2s;
+}
+details.section-dropdown > summary:hover {
+  background: rgba(255,255,255,0.02);
+}
+details.section-dropdown > summary::-webkit-details-marker { display: none; }
+details.section-dropdown > summary::before {
+  content: '\25B6';
+  font-size: 10px;
+  color: #555;
+  transition: transform 0.2s;
+}
+details.section-dropdown[open] > summary::before {
+  transform: rotate(90deg);
+}
+details.section-dropdown > .dropdown-content {
+  padding: 0 20px 20px;
+}
+details.sub-dropdown {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid #1a1a24;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+details.sub-dropdown > summary {
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #ccc;
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+details.sub-dropdown > summary::-webkit-details-marker { display: none; }
+details.sub-dropdown > summary::before {
+  content: '\25B6';
+  font-size: 9px;
+  color: #444;
+  transition: transform 0.2s;
+}
+details.sub-dropdown[open] > summary::before {
+  transform: rotate(90deg);
+}
+details.sub-dropdown > .dropdown-content {
+  padding: 0 16px 16px;
+}
+</style>
+</head>
+<body>
+
+<h1>TSP Account-Based LinkedIn Architecture</h1>
+<p class="sub">3,099 companies across 4 campaigns • Merged OLD + NEW lists • Account-based targeting (company upload + filter overlay) • All content backed by C&S transcript data</p>
+
+<div class="note">
+<strong>Key shift:</strong> Company lists uploaded to LinkedIn (near 100% match via domains) → Job Function + Seniority filters layered on top → Reaches ALL relevant decision-makers at target companies. No email enrichment needed. Minimum 300 matched members per campaign — all 4 campaigns clear this comfortably.
+<br><br>
+<strong>LinkedIn limits:</strong> Min 300 matched members to run. Max 300,000 companies per list. Recommended 50K+ (but for ABM with matched lists, 1K-10K filtered members is standard). Processing: up to 48 hours. <a href="https://www.linkedin.com/help/lms/answer/a423102" style="color:#dda866">Source</a>
+</div>
+
+<!-- SUMMARY CARDS -->
+<div class="grid4">
+<div class="card">
+<div class="card-label">Total Companies</div>
+<div class="card-big blue">3,099</div>
+<div class="card-label" style="margin-top:4px">100% of merged pool</div>
+</div>
+<div class="card">
+<div class="card-label">Campaigns</div>
+<div class="card-big green">4</div>
+<div class="card-label" style="margin-top:4px">By company need</div>
+</div>
+<div class="card">
+<div class="card-label">LinkedIn URLs</div>
+<div class="card-big orange">85%+</div>
+<div class="card-label" style="margin-top:4px">Enriched coverage</div>
+</div>
+<div class="card">
+<div class="card-label">Domain Coverage</div>
+<div class="card-big purple">87.5%</div>
+<div class="card-label" style="margin-top:4px">~100% LinkedIn match</div>
+</div>
+</div>
+
+<!-- SEGMENTATION OVERVIEW -->
+<details class="section-dropdown">
+<summary>📐 Segmentation Logic</summary>
+<div class="dropdown-content">
+<div class="section-desc">Two dimensions: <strong>what the company needs from TSP</strong> (segment) × <strong>company size</strong> (which changes the pain point)</div>
+
+<table>
+<tr><th>Campaign</th><th>Segment</th><th>Size</th><th>Companies</th><th>The Problem TSP Solves</th><th>Budget</th></tr>
+<tr>
+<td><span class="badge b-blue">1</span> Build From Zero</td>
+<td>C3 + C1B</td><td>All sizes</td><td><strong>720</strong></td>
+<td>No sales function. Founder doing sales. Need first hire + infrastructure.</td>
+<td><strong>25%</strong></td>
+</tr>
+<tr>
+<td><span class="badge b-green">2</span> Add Outbound</td>
+<td>C4B</td><td>11-100 + Unknown</td><td><strong>786</strong></td>
+<td>Has sales team but no SDR/outbound layer. Closers are prospecting. Need pipeline capacity.</td>
+<td><strong>25%</strong></td>
+</tr>
+<tr>
+<td><span class="badge b-orange">3</span> Optimise Engine</td>
+<td>C4B</td><td>101-500</td><td><strong>810</strong></td>
+<td>Established sales team at scale. Need efficiency, GTM engineering, modern tooling. Junior talent that sticks.</td>
+<td><strong>25%</strong></td>
+</tr>
+<tr>
+<td><span class="badge b-purple">4</span> GTM Efficiency</td>
+<td>C4A + C1A + Unknown</td><td>All sizes</td><td><strong>783</strong></td>
+<td>Already has SDR function. Hardest sell. Test with GTM-engineering-only angle — efficiency, not headcount.</td>
+<td><strong>25%</strong></td>
+</tr>
+<tr style="background:rgba(255,255,255,0.02)">
+<td colspan="3"><strong>TOTAL</strong></td><td><strong>3,099</strong></td><td></td><td><strong>100%</strong></td>
+</tr>
+</table>
+
+</div>
+</details></div>
+
+<!-- CAMPAIGN 1 -->
+<div class="campaign-card c1">
+<div class="campaign-header" onclick="toggle(1)">
+<div>
+<div class="campaign-name"><span class="blue">Campaign 1:</span> "Build From Zero"</div>
+<div style="font-size:12px;color:#666;margin-top:2px">Founder-Led Companies (C3 + C1B) • No sales function</div>
+</div>
+<div class="campaign-stats">
+<div class="campaign-stat"><strong>720</strong> companies</div>
+<div class="campaign-stat"><strong>25%</strong> budget</div>
+<button class="toggle-btn" id="btn1">Expand ▼</button>
+</div>
+</div>
+<div class="campaign-body" id="body1">
+
+<div class="subsection">
+<div class="subsection-title">🎯 Targeting Setup</div>
+</div>
+<div class="filter-box">
+<div class="filter-label">Company List Upload</div>
+<div class="filter-value">720 company domains (590 C3 + 130 C1B) → LinkedIn Matched Audience</div>
+</div>
+<div class="filter-box">
+<div class="filter-label">Filter Overlay</div>
+<div class="filter-value"><strong>Seniority:</strong> Owner, CXO, VP, Director &nbsp;|&nbsp; <strong>Function:</strong> Business Development, Sales, General Management, Entrepreneurship</div>
+</div>
+<div class="filter-box">
+<div class="filter-label">Company Size Breakdown</div>
+<div class="filter-value">11-50: 324 cos &nbsp;|&nbsp; 51-100: 296 cos &nbsp;|&nbsp; Unknown: 99 cos &nbsp;|&nbsp; 101-250: 1 co</div>
+</div>
+<div class="filter-box">
+<div class="filter-label">Top Industries</div>
+<div class="filter-value">Professional Services (88) • Manufacturing (55) • Real Estate (54) • Financial Services (52) • IT (46) • Health Care (34) • Advertising (26)</div>
+</div>
+
+<div class="subsection">
+<div class="subsection-title">💡 C&S Transcript Insights — What Resonates With This Audience</div>
+</div>
+
+<div class="insight-box">
+<strong>C3 = highest engagement segment at 16.5%</strong> and 4.6% positive rate. CEO/Founder + C3 converts at 5.3%. CEO/Founder + C1B at 7.6%. These are people actively feeling the pain — they just don't know a solution like TSP exists.
+</div>
+
+<div class="quote">"We are good at strategies but we just need execution." — Dinesh Mandawala, CEO, Happy Chimps (231s, C3)</div>
+<div class="quote">"My sales team are spending silly amounts of time doing silly things not out of selling. I hear what you're saying and I think we can do better." — Lois Newman, Head of Sales, CASCO Pet (546s, Disco Booked)</div>
+<div class="quote">"Has tried an outbound function but it didn't work... has been looking at outsourced models" — Tayfun Bilsel, CEO, Clinked (469s, Interested)</div>
+<div class="quote">"Small team — interested in GTM only... doing sales and lead gen himself... wants this role" — Richard Jackson, CEO, Alphaletz (553s, GTM Interest)</div>
+
+<div class="insight-box">
+<strong>Key pitch elements for this audience:</strong><br>
+• <strong>GTM engineering:</strong> 61.4% effectiveness — the strongest element. Founders love the "one person + tools = 3x pipeline" framing.<br>
+• <strong>"Too small" rebuttal:</strong> 34.9% effective. CASCO Pet (team of 3) booked a disco after Alex said "our smallest client is a team of 3 people."<br>
+• <strong>WorldFirst story:</strong> Converted Claire Enders from "call me in a year" → "let's set up a Zoom" in one sentence. Saves for email 2-3, not ad creative.<br>
+• <strong>Environment/physical HQ:</strong> 50.0% effective, longest talk times (334.7s avg). Robert Schrimpff "asked about seating more of his team here with us."
+</div>
+
+<div class="subsection">
+<div class="subsection-title">📢 Paid Ad Creatives (6 assets)</div>
+</div>
+<table>
+<tr><th>#</th><th>Format</th><th>Post / Angle</th><th>Transcript Backing</th></tr>
+<tr><td>1</td><td><span class="tag t-tla">TLA</span></td><td><strong>"The Founder Sales Trap: why revenue plateaus at £1-2M"</strong><br>You're the CEO AND the sales team. Here's what happens next.</td><td><span class="data-tag">C3: 16.5% engagement</span><span class="data-tag">57 CEO+C3 in list</span><br>Clinked, Happy Chimps, Creode — all founders stuck doing sales</td></tr>
+<tr><td>2</td><td><span class="tag t-tla">TLA</span></td><td><strong>"What investors actually question first about your business"</strong><br>Revenue engine readiness. Scalable sales = what VCs look for post-seed.</td><td><span class="data-tag">WorldFirst: 93.3% strategic</span><span class="data-tag">29 CEO+C1B in list</span></td></tr>
+<tr><td>3</td><td><span class="tag t-tla">TLA</span></td><td><strong>"One person + modern tools = 3x your current pipeline"</strong><br>What GTM engineering means for a founder who's never hired a salesperson.</td><td><span class="data-tag">GTM: 61.4% effectiveness</span><br>Alphaletz: "interested in GTM only, liked the pitch"</td></tr>
+<tr><td>4</td><td><span class="tag t-tla">TLA</span></td><td><strong>"Most founders get sales wrong — they hire like a big company"</strong><br>You don't need 5 SDRs. You need 1 trained person with the right tools.</td><td><span class="data-tag">"Too small": 34.9% eff</span><br>CASCO Pet: team of 3, booked disco meeting</td></tr>
+<tr><td>5</td><td><span class="tag t-video">VIDEO</span></td><td><strong>Sully 15-sec: "Most founders I meet are stuck doing sales themselves..."</strong></td><td><span class="data-tag">Video: lowest CPM $38.94</span><span class="data-tag">C3: highest engagement</span></td></tr>
+<tr><td>6</td><td><span class="tag t-image">IMAGE</span></td><td><strong>"Only 0.6% of UK B2B businesses at your size make it to £10M"</strong></td><td>Survival instinct angle — speaks to founder ambition</td></tr>
+</table>
+
+<div class="subsection">
+<div class="subsection-title">📅 Organic Posts (8 weeks, 2-3/week)</div>
+</div>
+<table>
+<tr><th>Wk</th><th>Format</th><th>Post</th><th>Data Backing</th></tr>
+<tr><td>1</td><td><span class="tag t-text">TEXT</span></td><td>"A CEO told me: 'We are good at strategies but we just need execution.'"</td><td>Happy Chimps — verbatim quote</td></tr>
+<tr><td>1</td><td><span class="tag t-carousel">CAROUSEL</span></td><td>"The 5 stages of founder-led sales (and which one you're stuck at)"</td><td>1,070 C3 contacts in this exact loop</td></tr>
+<tr><td>2</td><td><span class="tag t-text">TEXT</span></td><td>"Your first sales hire will fail. Not because they're bad."</td><td>Cat A: 53 leads acknowledged hire pain</td></tr>
+<tr><td>2</td><td><span class="tag t-poll">POLL</span></td><td>"How does your startup handle sales?" (a) I do it (b) Hired someone (c) Outsource (d) No outbound</td><td>Maps to C3/C1B/C4A/C4B</td></tr>
+<tr><td>3</td><td><span class="tag t-text">TEXT</span></td><td>"Stop hiring 5 SDRs. One person + Clay + intent data = 3x pipeline."</td><td>GTM: 61.4%, Neverbland: £40k consultant replaced</td></tr>
+<tr><td>4</td><td><span class="tag t-carousel">CAROUSEL</span></td><td>"Old way vs new way: building B2B sales in 2026"</td><td>Claimer: "email mid Q2 with subject GTM"</td></tr>
+<tr><td>5</td><td><span class="tag t-text">TEXT</span></td><td>"I was the first SDR at WorldFirst. 1 → 250. £750M exit."</td><td>WorldFirst: 93.3% when deployed strategically</td></tr>
+<tr><td>5</td><td><span class="tag t-carousel">CAROUSEL</span></td><td>"When should a founder stop doing sales? (Here's the data)"</td><td>C3 = founder-doing-sales segment</td></tr>
+<tr><td>6</td><td><span class="tag t-text">TEXT</span></td><td>"What your first sales hire should actually do (not what you think)"</td><td>C4B model: pipeline builder ≠ closer</td></tr>
+<tr><td>7</td><td><span class="tag t-doc">PDF DOC</span></td><td>"The Founder's First Sales Hire Playbook" — 8 pages</td><td>Gated asset for MOFU nurture</td></tr>
+<tr><td>7</td><td><span class="tag t-text">TEXT</span></td><td>"Companies with no sales function engage at 16.5%. With SDRs? 10.2%."</td><td>C3 vs C4A engagement data</td></tr>
+<tr><td>8</td><td><span class="tag t-carousel">CAROUSEL</span></td><td>"From founder-led to £15M raise — Client case study"</td><td>#1 ask from engaged leads</td></tr>
+</table>
+
+<div class="subsection">
+<div class="subsection-title">🔄 Multi-Channel Follow-Up</div>
+</div>
+<div class="flow-row">
+<div class="flow-step"><strong>Wk 1-3:</strong> LinkedIn Ads warm-up</div>
+<div class="flow-arrow">→</div>
+<div class="flow-step"><strong>Wk 3:</strong> Cold calls (Test B) or email sequence (Test A)</div>
+<div class="flow-arrow">→</div>
+<div class="flow-step"><strong>Wk 4+:</strong> Interested leads → MOFU nurture (Cat A-G sequences)</div>
+</div>
+</div>
+</div>
+
+<!-- CAMPAIGN 2 -->
+<div class="campaign-card c2">
+<div class="campaign-header" onclick="toggle(2)">
+<div>
+<div class="campaign-name"><span class="green">Campaign 2:</span> "Add Outbound"</div>
+<div style="font-size:12px;color:#666;margin-top:2px">C4B Small & Medium (11-100 employees + Unknown size) • Has sales team, no SDRs</div>
+</div>
+<div class="campaign-stats">
+<div class="campaign-stat"><strong>786</strong> companies</div>
+<div class="campaign-stat"><strong>25%</strong> budget</div>
+<button class="toggle-btn" id="btn2">Expand ▼</button>
+</div>
+</div>
+<div class="campaign-body" id="body2">
+
+<div class="filter-box">
+<div class="filter-label">Company List</div>
+<div class="filter-value">786 companies: C4B 11-50 (394) + C4B 51-100 (257) + C4B Unknown size (135)</div>
+</div>
+<div class="filter-box">
+<div class="filter-label">Filter Overlay</div>
+<div class="filter-value"><strong>Seniority:</strong> Director, VP, CXO &nbsp;|&nbsp; <strong>Function:</strong> Sales, Business Development</div>
+</div>
+<div class="filter-box">
+<div class="filter-label">Top Industries</div>
+<div class="filter-value">Manufacturing (78+) • IT (33) • Professional Services (33) • Financial Services (17) • Health Care (16) • Real Estate (16) • Advertising (13)</div>
+</div>
+
+<div class="subsection">
+<div class="subsection-title">💡 C&S Transcript Insights</div>
+</div>
+
+<div class="insight-box green-bg">
+<strong>C4B is the volume winner:</strong> 588 calls in C&S data, 24 positive outcomes, 73 engaged. 3 of 4 Disco Booked came from C4B. These companies have sales leadership but no SDRs — exactly the gap TSP fills. The pain: closers are doing prospecting.
+</div>
+
+<div class="quote">"He got it and loved the idea. Wanted to hire SDR and grow this year. Really values aptitude and feels the pain." — Lee Saunderson, Head of Sales, Karma Kitchen (273s, Disco Booked, C4B 11-50)</div>
+<div class="quote">"I've only been here a year. I'm like God, this is so backward. My sales team are spending silly amounts of time doing silly things not selling." — Lois Newman, CASCO Pet (546s, Disco Booked, C4B 51-100)</div>
+<div class="quote">"Your approach sounds a little bit different and timing is pretty good." — Ben Rees, MD, Creode (498s, Interested)</div>
+
+<div class="insight-box green-bg">
+<strong>Key pitch elements:</strong><br>
+• <strong>90-day programme:</strong> 34.3% effectiveness. This audience understands the onboarding problem — their junior hires have churned.<br>
+• <strong>Physical HQ/environment:</strong> 50.0% effective. "Junior salespeople need a floor." They've seen WFH fail for juniors.<br>
+• <strong>Recruiter differentiation:</strong> 12.1% of C&S calls had recruitment confusion, causing 67.3% DQ. Fix this BEFORE the call via LinkedIn ads.<br>
+• <strong>"Send me an email":</strong> 76.9% effective rebuttal rate. These are WARM — they want info, not a hard sell. LinkedIn content = the info they'd ask for.
+</div>
+
+<div class="subsection">
+<div class="subsection-title">📢 Paid Ad Creatives (6 assets)</div>
+</div>
+<table>
+<tr><th>#</th><th>Format</th><th>Post / Angle</th><th>Transcript Backing</th></tr>
+<tr><td>1</td><td><span class="tag t-tla">TLA</span></td><td><strong>"80% of first sales hires fail — and it's not the people"</strong><br>The system problem. Environment, coaching, structure.</td><td><span class="data-tag">90-day: 34.3%</span><span class="data-tag">Cat A: 53 hire-pain leads</span><br>Solar for Schools, Clinked, Creode — tried juniors, all failed</td></tr>
+<tr><td>2</td><td><span class="tag t-tla">TLA</span></td><td><strong>"Your closers shouldn't be building pipeline"</strong><br>The cost of senior salespeople prospecting instead of closing.</td><td><span class="data-tag">C4B: 4.1% positive</span><span class="data-tag">"In-house": 44.3% eff</span><br>The #1 C4B pain point</td></tr>
+<tr><td>3</td><td><span class="tag t-tla">TLA</span></td><td><strong>"We get compared to recruiters. Here's why that's wrong."</strong><br>Recruiter finds a person. TSP builds a function.</td><td><span class="data-tag">Recruitment confusion: 12.1%</span><span class="data-tag">67.3% DQ when confused</span></td></tr>
+<tr><td>4</td><td><span class="tag t-tla">TLA</span></td><td><strong>"The GTM engineering pitch converts at 61%. 'We hire salespeople' converts at 23%."</strong></td><td><span class="data-tag">GTM: 61.4%</span><span class="data-tag">211.5s avg talk time</span></td></tr>
+<tr><td>5</td><td><span class="tag t-video">VIDEO</span></td><td><strong>Sully 15-sec: "Most Sales Directors have the same problem..."</strong></td><td><span class="data-tag">Video: lowest CPM</span></td></tr>
+<tr><td>6</td><td><span class="tag t-image">IMAGE</span></td><td><strong>"Your SDR team's first 90 days determine everything"</strong></td><td><span class="data-tag">Environment: 50.0%, 334.7s avg</span></td></tr>
+</table>
+
+<div class="subsection">
+<div class="subsection-title">📅 Organic Posts (8 weeks)</div>
+</div>
+<table>
+<tr><th>Wk</th><th>Format</th><th>Post</th><th>Data Backing</th></tr>
+<tr><td>1</td><td><span class="tag t-text">TEXT</span></td><td>"Third junior hire in 18 months. All churned. He said: 'I don't know what I'm doing wrong.'"</td><td>Solar for Schools (606s), Clinked (469s)</td></tr>
+<tr><td>1</td><td><span class="tag t-carousel">CAROUSEL</span></td><td>"5 signs your SDR function is set up to fail"</td><td>90-day: 34.3%, Physical HQ: 50.0%</td></tr>
+<tr><td>2</td><td><span class="tag t-text">TEXT</span></td><td>"A recruiter finds you a person. We build you a machine."</td><td>12.1% recruitment confusion kills calls</td></tr>
+<tr><td>3</td><td><span class="tag t-text">TEXT</span></td><td>"Pipeline isn't a sales problem. It's an infrastructure problem."</td><td>GTM: 61.4%</td></tr>
+<tr><td>3</td><td><span class="tag t-poll">POLL</span></td><td>"Who builds pipeline at your company?" (a) Closers (b) SDRs (c) Outsourced (d) Nobody</td><td>Maps to segments</td></tr>
+<tr><td>4</td><td><span class="tag t-text">TEXT</span></td><td>"'Not the right time.' The most expensive 3 words in B2B sales."</td><td>"Not now": 122 objections, 51.6% eff</td></tr>
+<tr><td>5</td><td><span class="tag t-carousel">CAROUSEL</span></td><td>"Recruiter vs DIY Hire vs Sales Function Builder"</td><td>Cat G: Energisave, PREAH</td></tr>
+<tr><td>6</td><td><span class="tag t-text">TEXT</span></td><td>"Why I built a physical sales floor when everyone went remote"</td><td>Environment: 50.0%, 334.7s</td></tr>
+<tr><td>7</td><td><span class="tag t-doc">PDF DOC</span></td><td>"The Sales Scaling Playbook" — 8 pages</td><td>Gated asset for MOFU</td></tr>
+<tr><td>8</td><td><span class="tag t-text">TEXT</span></td><td>"We analysed 1,401 conversations. Here are the 4 things that book meetings."</td><td>All 4 Disco Booked share these</td></tr>
+</table>
+</div>
+</div>
+
+<!-- CAMPAIGN 3 -->
+<div class="campaign-card c3">
+<div class="campaign-header" onclick="toggle(3)">
+<div>
+<div class="campaign-name"><span class="orange">Campaign 3:</span> "Optimise Engine"</div>
+<div style="font-size:12px;color:#666;margin-top:2px">C4B Large (101-500 employees) • Established sales teams needing efficiency</div>
+</div>
+<div class="campaign-stats">
+<div class="campaign-stat"><strong>810</strong> companies</div>
+<div class="campaign-stat"><strong>25%</strong> budget</div>
+<button class="toggle-btn" id="btn3">Expand ▼</button>
+</div>
+</div>
+<div class="campaign-body" id="body3">
+
+<div class="filter-box">
+<div class="filter-label">Company List</div>
+<div class="filter-value">810 companies: C4B 101-250 (662) + C4B 251-500 (148)</div>
+</div>
+<div class="filter-box">
+<div class="filter-label">Filter Overlay</div>
+<div class="filter-value"><strong>Seniority:</strong> Director, VP, CXO &nbsp;|&nbsp; <strong>Function:</strong> Sales, Business Development, Operations</div>
+</div>
+<div class="filter-box">
+<div class="filter-label">Dominant Industry</div>
+<div class="filter-value"><strong>Manufacturing: 233 companies (29%)</strong> • Professional Services (40) • Construction (29) • Real Estate (26) • Food & Bev (25) • Energy (24) • Transportation (22)</div>
+</div>
+
+<div class="subsection">
+<div class="subsection-title">💡 C&S Transcript Insights</div>
+</div>
+
+<div class="insight-box orange-bg">
+<strong>Larger C4B companies have different pain:</strong> They already have sales teams and leadership. They're not "building from zero" — they're looking for <strong>efficiency gains, better junior talent, and modernisation</strong>. The GTM engineering angle is critical here. The "we're not a recruiter" differentiation is also essential — 101-250 employee companies are most likely to confuse TSP with a recruitment agency.
+</div>
+
+<div class="quote">"Team of 20, 85m revenue. Does not have a young, hungry Outbound team. Does not have proper demand gen." — Iain Moring, Sales Director, Pureprint (471s, Disco Booked, C4B 251-500)</div>
+<div class="quote">"Everyone's looking for the multi-purpose outbound reps. Inbound is a disappearing art in SaaS." — Lee Saunderson, Head of Sales, Karma Kitchen (273s, Disco Booked, C4B)</div>
+
+<div class="insight-box orange-bg">
+<strong>Key pitch elements:</strong><br>
+• <strong>GTM engineering:</strong> 61.4% — lead with efficiency, not headcount. "One GTM Associate = 3-4 SDRs at 1/3 cost."<br>
+• <strong>Recruiter differentiation:</strong> Critical — larger companies are MORE likely to confuse TSP with recruiters.<br>
+• <strong>Data-driven content:</strong> CROs and Sales Directors at 100+ companies are data people. Posts with stats (61.4%, 12.0% CRO conversion, 1,401 conversations) land.<br>
+• <strong>"Already have it covered":</strong> 308 instances, 33.8% rebuttal effectiveness. "Is that team hitting the numbers you need?"
+</div>
+
+<div class="subsection">
+<div class="subsection-title">📢 Paid Ad Creatives (5 assets)</div>
+</div>
+<table>
+<tr><th>#</th><th>Format</th><th>Post / Angle</th><th>Transcript Backing</th></tr>
+<tr><td>1</td><td><span class="tag t-tla">TLA</span></td><td><strong>"One GTM Associate = 3-4 traditional SDRs at 1/3 the cost"</strong></td><td><span class="data-tag">GTM: 61.4%</span><span class="data-tag">Neverbland: £40k consultant</span></td></tr>
+<tr><td>2</td><td><span class="tag t-tla">TLA</span></td><td><strong>"We analysed 1,401 cold conversations. Here's what books meetings."</strong></td><td><span class="data-tag">Proprietary data</span></td></tr>
+<tr><td>3</td><td><span class="tag t-tla">TLA</span></td><td><strong>"We get compared to recruiters. Here's why that's wrong."</strong></td><td><span class="data-tag">12.1% confusion, 67.3% DQ</span></td></tr>
+<tr><td>4</td><td><span class="tag t-video">VIDEO</span></td><td><strong>Sully 15-sec: "Your sales team has the talent. They don't have the infrastructure."</strong></td><td>GTM-efficiency framing</td></tr>
+<tr><td>5</td><td><span class="tag t-image">IMAGE</span></td><td><strong>"CROs convert at 12%. Sales Managers at 1.1%. Your data tells you who to call."</strong></td><td><span class="data-tag">CRO: 12.0%</span><span class="data-tag">SM: 1.1%</span></td></tr>
+</table>
+
+<div class="subsection">
+<div class="subsection-title">📅 Organic Posts (6 weeks — shorter cycle, these companies decide faster)</div>
+</div>
+<table>
+<tr><th>Wk</th><th>Format</th><th>Post</th><th>Data Backing</th></tr>
+<tr><td>1</td><td><span class="tag t-text">TEXT</span></td><td>"'We already have that covered.' 308 times I've heard this. Here's what 'covered' usually means."</td><td>"Already have": 308×, 33.8% eff</td></tr>
+<tr><td>2</td><td><span class="tag t-text">TEXT</span></td><td>"'We do it in-house.' Good. We're not replacing your team."</td><td>"In-house": 131×, 44.3% eff</td></tr>
+<tr><td>3</td><td><span class="tag t-carousel">CAROUSEL</span></td><td>"From founder-led to £15M raise — Client case study"</td><td>#1 ask from engaged prospects</td></tr>
+<tr><td>4</td><td><span class="tag t-text">TEXT</span></td><td>"First-attempt calls convert at 33%. By attempt 9, it drops to 2%."</td><td>1st: 32.77%, 9th: ~2%</td></tr>
+<tr><td>5</td><td><span class="tag t-text">TEXT</span></td><td>"I was the first SDR at WorldFirst. 1 → 250. £750M exit."</td><td>WorldFirst: 93.3% strategic</td></tr>
+<tr><td>6</td><td><span class="tag t-doc">PDF DOC</span></td><td>"The Sales Scaling Playbook" — shared with Campaign 2</td><td>Gated asset</td></tr>
+</table>
+</div>
+</div>
+
+<!-- CAMPAIGN 4 -->
+<div class="campaign-card c4">
+<div class="campaign-header" onclick="toggle(4)">
+<div>
+<div class="campaign-name"><span class="purple">Campaign 4:</span> "GTM Efficiency"</div>
+<div style="font-size:12px;color:#666;margin-top:2px">C4A + C1A + Unknown • Already has SDR function • Test campaign — lowest budget</div>
+</div>
+<div class="campaign-stats">
+<div class="campaign-stat"><strong>783</strong> companies</div>
+<div class="campaign-stat"><strong>25%</strong> budget</div>
+<button class="toggle-btn" id="btn4">Expand ▼</button>
+</div>
+</div>
+<div class="campaign-body" id="body4">
+
+<div class="filter-box">
+<div class="filter-label">Company List</div>
+<div class="filter-value">783 companies: C4A (616) + C1A (79) + Unknown (88)</div>
+</div>
+<div class="filter-box">
+<div class="filter-label">Filter Overlay</div>
+<div class="filter-value"><strong>Seniority:</strong> VP, CXO &nbsp;|&nbsp; <strong>Function:</strong> Sales, Revenue Operations</div>
+</div>
+
+<div class="subsection">
+<div class="subsection-title">💡 C&S Transcript Insights</div>
+</div>
+
+<div class="insight-box purple-bg">
+<strong>C4A is the hardest segment:</strong> 2.2% positive rate, 43.8% DQ. These companies already have SDRs. The standard "build a sales function" pitch doesn't resonate — they've already built one.<br><br>
+<strong>BUT:</strong> The GTM engineering pitch works differently here. When prospects hear "we make your existing team more efficient with modern tools" instead of "we build you a team," the response changes. Scott Lenik (Neverbland, C4B but behaves like C4A) was paying £40k/yr for a consultant and wanted GTM in-house.<br><br>
+<strong>Strategy:</strong> Equal budget split across all 4 campaigns. If the GTM-engineering-only angle produces engagement on C4A, scale up. If not, reallocate budget to Campaigns 1-3.
+</div>
+
+<div class="subsection">
+<div class="subsection-title">📢 Paid Ad Creatives (3 assets only — test mode)</div>
+</div>
+<table>
+<tr><th>#</th><th>Format</th><th>Post / Angle</th><th>Why</th></tr>
+<tr><td>1</td><td><span class="tag t-tla">TLA</span></td><td><strong>"One person + modern tools + proper infrastructure = 3x your pipeline"</strong></td><td>Pure GTM efficiency — no "build a team" language</td></tr>
+<tr><td>2</td><td><span class="tag t-tla">TLA</span></td><td><strong>"The GTM engineering pitch converts at 61%"</strong></td><td>Data-led, appeals to ops/revenue leaders</td></tr>
+<tr><td>3</td><td><span class="tag t-video">VIDEO</span></td><td><strong>Sully 15-sec: GTM-first version</strong></td><td>Efficiency framing, not team-building framing</td></tr>
+</table>
+
+<p style="color:#888;font-size:12px;margin-top:12px">Organic posts: shares content from Campaign 3 (same efficiency-focused audience). No dedicated organic stream — test budget only.</p>
+</div>
+</div>
+
+<!-- SHARED CONTENT -->
+<details class="section-dropdown" style="margin-top:32px">
+<summary>🔗 Shared Assets Across All Campaigns</summary>
+<div class="dropdown-content">
+<table>
+<tr><th>Asset</th><th>Used By</th><th>Why Shared</th></tr>
+<tr><td>Sully 15-sec video (3 script variants)</td><td>All 4 campaigns</td><td>Same person, different script per audience. Lowest CPM format ($38.94).</td></tr>
+<tr><td>Client case study carousel</td><td>Campaigns 1, 2, 3</td><td>Universal social proof. #1 ask from engaged C&S leads.</td></tr>
+<tr><td>WorldFirst origin story</td><td>Campaigns 1, 2, 3</td><td>93.3% effective when Angus deploys strategically. Credibility anchor.</td></tr>
+<tr><td>"We get compared to recruiters" TLA</td><td>Campaigns 2, 3</td><td>12.1% confusion rate on calls. Fix before the call happens. Not needed for Campaign 1 (founders don't confuse) or 4 (they already have SDRs).</td></tr>
+<tr><td>GTM engineering stat (61.4%) TLA</td><td>All 4 campaigns</td><td>Single most effective pitch element in entire C&S dataset. Universal appeal.</td></tr>
+</table>
+</div>
+</div>
+</details>
+
+<!-- NEXT STEPS -->
+<details class="section-dropdown" style="margin-top:24px">
+<summary>⏭️ Execution Sequence</summary>
+<div class="dropdown-content">
+<table>
+<tr><th>Step</th><th>Action</th><th>Owner</th><th>Blocker?</th></tr>
+<tr><td>1</td><td>Export company domains from Clay per campaign bucket (4 CSV files)</td><td>Vion / Ozzy</td><td>No</td></tr>
+<tr><td>2</td><td>Upload 4 company lists to LinkedIn Campaign Manager as Matched Audiences</td><td>Tom Tigwell</td><td>No (48hr processing)</td></tr>
+<tr><td>3</td><td>Write 3 TLA posts for Sully → post organically</td><td>Vion drafts, Sully posts</td><td><strong>YES — real blocker</strong></td></tr>
+<tr><td>4</td><td>Film 1 Sully video (15 sec, 3 script variants per campaign)</td><td>Sully</td><td>YES</td></tr>
+<tr><td>5</td><td>Create 1 stat graphic in Canva</td><td>Vion / team</td><td>No</td></tr>
+<tr><td>6</td><td>Configure 4 campaigns in Campaign Manager with filter overlays</td><td>Tom Tigwell</td><td>Depends on step 2+3</td></tr>
+<tr><td>7</td><td>Launch ads → 2-3 week warm-up before outbound</td><td>Tom Tigwell</td><td>Depends on step 6</td></tr>
+<tr><td>8</td><td>Begin organic posting cadence (2-3/week from Sully)</td><td>Sully + Vion</td><td>Depends on step 3</td></tr>
+</table>
+</div>
+</div>
+</details>
+
+<!-- COMPLETE ASSET INVENTORY -->
+<details class="section-dropdown" style="margin-top:40px;border-top:2px solid #333;padding-top:0">
+<summary style="padding-top:32px">📋 Complete Asset Inventory — What to Build & Where It's Used</summary>
+<div class="dropdown-content">
+<div class="section-desc">Every asset that needs creating, which campaigns use it, and the segment targeting details so the brief is clear when building each asset.</div>
+
+<div class="note">
+<strong>How to read this table:</strong> Each row is one asset to create. The "Campaigns" column shows which of the 4 campaigns will use it. The "Segment Targeting" column explains exactly who will see this asset and what problem you're addressing — use this as the creative brief when building.
+</div>
+
+<!-- PAID TLA POSTS -->
+<details class="sub-dropdown">
+<summary>📣 Paid Assets: Thought Leader Ads (TLAs) — 8 unique posts from Sully's profile</summary>
+<div class="dropdown-content">
+<div class="section-desc">These are organic LinkedIn posts by Sully that then get promoted as Thought Leader Ads via Tom Tigwell. They must work as genuine posts AND as ad creatives. 60% of ad budget goes here.</div>
+<table>
+<tr>
+<th style="width:30px">#</th>
+<th style="width:70px">Format</th>
+<th style="width:260px">Asset Title / Angle</th>
+<th style="width:130px">Campaigns</th>
+<th>Segment Targeting Details (who sees this & what problem you're solving)</th>
+</tr>
+
+<tr>
+<td style="font-weight:700;color:#5b9aff">T1</td>
+<td><span class="tag t-tla">TLA</span></td>
+<td><strong>"The Founder Sales Trap: why revenue plateaus at £1-2M"</strong><br><span style="color:#777;font-size:11px">You're the CEO AND the sales team. Here's what happens next — and how to get out.</span></td>
+<td><span class="badge b-blue">C1</span></td>
+<td>
+<div class="filter-box" style="margin:0;padding:8px 10px">
+<div style="font-size:11px;color:#5b9aff;font-weight:700;margin-bottom:4px">Campaign 1: Build From Zero — 720 companies</div>
+<strong>Segments:</strong> C3 (590 cos, no sales function) + C1B (130 cos, no SDRs)<br>
+<strong>Sizes:</strong> 11-50 (324) • 51-100 (296) • Unknown (99)<br>
+<strong>LinkedIn filters:</strong> Seniority: Owner, CXO, VP | Function: General Management, Entrepreneurship<br>
+<strong>Who sees this:</strong> CEO/Founders and MDs at companies with NO sales function — they're doing sales themselves<br>
+<strong>Problem addressed:</strong> Revenue plateau because founder can't scale themselves. Pipeline depends on one person.<br>
+<strong>C&S evidence:</strong> C3 = 16.5% engagement, 4.6% positive. Happy Chimps: "We are good at strategies but just need execution." Clinked: "tried outbound but it didn't work."
+</div>
+</td>
+</tr>
+
+<tr>
+<td style="font-weight:700;color:#5b9aff">T2</td>
+<td><span class="tag t-tla">TLA</span></td>
+<td><strong>"What investors actually question first about your business"</strong><br><span style="color:#777;font-size:11px">Revenue engine readiness. VCs look at sales infrastructure before product.</span></td>
+<td><span class="badge b-blue">C1</span></td>
+<td>
+<div class="filter-box" style="margin:0;padding:8px 10px">
+<div style="font-size:11px;color:#5b9aff;font-weight:700;margin-bottom:4px">Campaign 1: Build From Zero — 720 companies</div>
+<strong>Segments:</strong> C3 + C1B (same as T1)<br>
+<strong>Who sees this:</strong> Post-seed / Series A founders who are or will be fundraising<br>
+<strong>Problem addressed:</strong> Investor readiness — your revenue engine is a person (the founder), not a system<br>
+<strong>C&S evidence:</strong> WorldFirst story: 93.3% effective when deployed strategically. Converted Enders Analysis from "call me in a year" → Disco Booked. 29 CEO+C1B combos in list.
+</div>
+</td>
+</tr>
+
+<tr>
+<td style="font-weight:700;color:#5b9aff">T3</td>
+<td><span class="tag t-tla">TLA</span></td>
+<td><strong>"One person + modern tools + proper infrastructure = 3x your current pipeline"</strong><br><span style="color:#777;font-size:11px">What GTM engineering actually means for a founder who's never hired a salesperson.</span></td>
+<td><span class="badge b-blue">C1</span> <span class="badge b-purple">C4</span></td>
+<td>
+<div class="filter-box" style="margin:0;padding:8px 10px">
+<div style="font-size:11px;color:#5b9aff;font-weight:700;margin-bottom:4px">Campaign 1: Build From Zero — 720 cos | <span style="color:#b07aff">Campaign 4: GTM Efficiency — 783 cos</span></div>
+<strong>C1 segments:</strong> C3 + C1B founders — never hired, need to understand GTM concept from scratch<br>
+<strong>C4 segments:</strong> C4A + C1A (already have SDRs, 616+79 cos) — GTM is the efficiency angle that might work on this hard-to-convert segment<br>
+<strong>C4 LinkedIn filters:</strong> Seniority: VP, CXO only | Function: Sales, Revenue Operations<br>
+<strong>Problem addressed (C1):</strong> "I can't afford 5 SDRs" — you don't need 5, you need 1 with the right tools<br>
+<strong>Problem addressed (C4):</strong> "We already have SDRs but they're inefficient" — GTM engineering makes existing team 3x more productive<br>
+<strong>C&S evidence:</strong> GTM pitch: 61.4% effectiveness (highest of any pitch element), 211.5s avg talk time. Alphaletz: "interested in GTM only, liked the pitch." Neverbland: paying £40k/yr for consultant, wants GTM in-house.
+</div>
+</td>
+</tr>
+
+<tr>
+<td style="font-weight:700;color:#5b9aff">T4</td>
+<td><span class="tag t-tla">TLA</span></td>
+<td><strong>"Most founders get sales wrong — they hire like they're a big company"</strong><br><span style="color:#777;font-size:11px">You don't need 5 SDRs. You need 1 trained person with the right tools and environment.</span></td>
+<td><span class="badge b-blue">C1</span></td>
+<td>
+<div class="filter-box" style="margin:0;padding:8px 10px">
+<div style="font-size:11px;color:#5b9aff;font-weight:700;margin-bottom:4px">Campaign 1: Build From Zero — 720 companies</div>
+<strong>Who sees this:</strong> Founders at 11-50 employee companies about to make their first sales hire<br>
+<strong>Problem addressed:</strong> "We're too small for this" — actually, our smallest client is a team of 3<br>
+<strong>C&S evidence:</strong> "Too small" rebuttal: 34.9% effective. CASCO Pet (team of 3) booked disco. Alex: "Our customers vary — at the smallest end I've got a team of 3 people total."
+</div>
+</td>
+</tr>
+
+<tr>
+<td style="font-weight:700;color:#4ae68a">T5</td>
+<td><span class="tag t-tla">TLA</span></td>
+<td><strong>"80% of first sales hires fail — and it's not the people"</strong><br><span style="color:#777;font-size:11px">The system problem. Why junior salespeople churn without environment, coaching, structure.</span></td>
+<td><span class="badge b-green">C2</span></td>
+<td>
+<div class="filter-box" style="margin:0;padding:8px 10px">
+<div style="font-size:11px;color:#4ae68a;font-weight:700;margin-bottom:4px">Campaign 2: Add Outbound — 786 companies</div>
+<strong>Segments:</strong> C4B 11-50 (394 cos) + C4B 51-100 (257 cos) + C4B Unknown (135 cos)<br>
+<strong>LinkedIn filters:</strong> Seniority: Director, VP, CXO | Function: Sales, Business Development<br>
+<strong>Who sees this:</strong> Sales Directors, Heads of Sales, VPs at companies with sales teams but no SDR layer<br>
+<strong>Problem addressed:</strong> They've hired junior salespeople before and they churned. The problem wasn't the person — it was the environment and onboarding.<br>
+<strong>C&S evidence:</strong> 90-day programme pitch: 34.3% effectiveness. Solar for Schools (606s): "hired juniors, didn't work — wrong onboarding, fully remote." Clinked (469s): "tried outbound but it didn't work." Cat A: 53 leads with acknowledged hire-failure pain.
+</div>
+</td>
+</tr>
+
+<tr>
+<td style="font-weight:700;color:#4ae68a">T6</td>
+<td><span class="tag t-tla">TLA</span></td>
+<td><strong>"Your closers shouldn't be building pipeline"</strong><br><span style="color:#777;font-size:11px">The cost of having senior salespeople prospecting instead of closing. TSP builds the pipeline layer.</span></td>
+<td><span class="badge b-green">C2</span> <span class="badge b-orange">C3</span></td>
+<td>
+<div class="filter-box" style="margin:0;padding:8px 10px">
+<div style="font-size:11px;color:#4ae68a;font-weight:700;margin-bottom:4px">Campaign 2: Add Outbound — 786 cos | <span style="color:#ffaa5b">Campaign 3: Optimise Engine — 810 cos</span></div>
+<strong>C2 segments:</strong> C4B 11-100 — small companies where the Sales Director IS the prospector<br>
+<strong>C3 segments:</strong> C4B 101-500 — larger companies where senior salespeople are burdened with pipeline work<br>
+<strong>C3 LinkedIn filters:</strong> Seniority: Director, VP, CXO | Function: Sales, Business Development, Operations<br>
+<strong>Problem addressed:</strong> The #1 C4B pain — closers spending time prospecting instead of closing deals. Need a dedicated pipeline-building layer.<br>
+<strong>C&S evidence:</strong> C4B: 4.1% positive rate, 2,027 contacts in OLD list alone. "Do it in-house" rebuttal: 44.3% effective. 3 of 4 Disco Booked came from C4B. Pureprint (251-500): "Does not have proper demand gen."
+</div>
+</td>
+</tr>
+
+<tr>
+<td style="font-weight:700;color:#ffaa5b">T7</td>
+<td><span class="tag t-tla">TLA</span></td>
+<td><strong>"We get compared to recruiters a lot. Here's why that's wrong."</strong><br><span style="color:#777;font-size:11px">Recruiter finds a person. TSP builds a function: person + playbook + tools + process. 90 days in our office.</span></td>
+<td><span class="badge b-green">C2</span> <span class="badge b-orange">C3</span></td>
+<td>
+<div class="filter-box" style="margin:0;padding:8px 10px">
+<div style="font-size:11px;color:#4ae68a;font-weight:700;margin-bottom:4px">Campaign 2: Add Outbound — 786 cos | <span style="color:#ffaa5b">Campaign 3: Optimise Engine — 810 cos</span></div>
+<strong>NOT used in C1 or C4:</strong> Founders (C1) don't confuse TSP with recruiters — they've never talked to an SDR agency. C4A companies already have SDRs and won't confuse either.<br>
+<strong>Who sees this:</strong> Sales Directors and HoS at C4B companies — the personas MOST likely to confuse TSP with a recruiter<br>
+<strong>Problem addressed:</strong> Pre-empt the recruitment confusion that kills 12.1% of cold calls before they start<br>
+<strong>C&S evidence:</strong> 12.1% of all conversations involve recruitment confusion → 67.3% DQ when confused. Explicit "not a recruiter" phrasing (4 appearances): 0% positive, 75% DQ. Conor's framing (zero confusion in 114 calls) proves it's about HOW you frame, not WHETHER you address it.
+</div>
+</td>
+</tr>
+
+<tr>
+<td style="font-weight:700;color:#ffaa5b">T8</td>
+<td><span class="tag t-tla">TLA</span></td>
+<td><strong>"The GTM engineering pitch converts at 61%. The 'we hire salespeople' pitch converts at 23%."</strong><br><span style="color:#777;font-size:11px">Proprietary data from 1,401 conversations. How you frame your sales function matters.</span></td>
+<td><span class="badge b-orange">C3</span> <span class="badge b-purple">C4</span></td>
+<td>
+<div class="filter-box" style="margin:0;padding:8px 10px">
+<div style="font-size:11px;color:#ffaa5b;font-weight:700;margin-bottom:4px">Campaign 3: Optimise Engine — 810 cos | <span style="color:#b07aff">Campaign 4: GTM Efficiency — 783 cos</span></div>
+<strong>C3 segments:</strong> C4B 101-500 — larger companies with data-driven Sales Directors and CROs<br>
+<strong>C4 segments:</strong> C4A + C1A (has SDRs) — efficiency framing is the only angle that works on this segment<br>
+<strong>Who sees this:</strong> CROs, VPs of Sales, Revenue Operations leaders — data people who respond to evidence<br>
+<strong>Problem addressed:</strong> Positions TSP as data-driven experts, not just another sales agency. Teaches something genuinely useful (framing matters) while selling.<br>
+<strong>C&S evidence:</strong> GTM pitch: 61.4% effectiveness, 211.5s avg talk time. Physical HQ pitch: 22.8%. The data is proprietary — no competitor can claim it.
+</div>
+</td>
+</tr>
+</table>
+</div>
+</details>
+
+<!-- PAID VIDEO -->
+<details class="sub-dropdown">
+<summary>🎬 Paid Assets: Video — 1 video, 3 script variants</summary>
+<div class="dropdown-content">
+<div class="section-desc">One 15-second Sully talking-head video with 3 different opening lines per campaign audience. Lowest CPM format ($38.94). 30% of ad budget. Film once, edit 3 versions.</div>
+<table>
+<tr><th style="width:30px">#</th><th style="width:70px">Format</th><th style="width:260px">Script / Angle</th><th style="width:130px">Campaigns</th><th>Segment Targeting Details</th></tr>
+
+<tr>
+<td style="font-weight:700;color:#ffaa5b">V1</td>
+<td><span class="tag t-video">VIDEO</span></td>
+<td><strong>Variant A — Founder script:</strong><br>"Most founders I meet are stuck doing sales themselves. They know the product better than anyone. But they can't scale themselves. That's where we come in."</td>
+<td><span class="badge b-blue">C1</span></td>
+<td>
+<div class="filter-box" style="margin:0;padding:8px 10px">
+<div style="font-size:11px;color:#5b9aff;font-weight:700;margin-bottom:4px">Campaign 1: Build From Zero — 720 cos (C3 + C1B)</div>
+<strong>Who sees this:</strong> CEO/Founders and MDs at founder-led companies<br>
+<strong>Pain addressed:</strong> "I'm stuck doing two jobs — running the company AND being the sales team"<br>
+<strong>CTA:</strong> DM or link in bio
+</div>
+</td>
+</tr>
+
+<tr>
+<td style="font-weight:700;color:#ffaa5b">V2</td>
+<td><span class="tag t-video">VIDEO</span></td>
+<td><strong>Variant B — Sales Director script:</strong><br>"Most Sales Directors I work with have the same problem. Their closers are prospecting. Their juniors churn in 3 months. Their pipeline is unpredictable. We fix that."</td>
+<td><span class="badge b-green">C2</span></td>
+<td>
+<div class="filter-box" style="margin:0;padding:8px 10px">
+<div style="font-size:11px;color:#4ae68a;font-weight:700;margin-bottom:4px">Campaign 2: Add Outbound — 786 cos (C4B 11-100)</div>
+<strong>Who sees this:</strong> Sales Directors and Heads of Sales at companies with teams but no SDRs<br>
+<strong>Pain addressed:</strong> Junior hire churn + closers burdened with prospecting
+</div>
+</td>
+</tr>
+
+<tr>
+<td style="font-weight:700;color:#ffaa5b">V3</td>
+<td><span class="tag t-video">VIDEO</span></td>
+<td><strong>Variant C — Efficiency script:</strong><br>"Your sales team has the talent. What they don't have is the infrastructure. One GTM Associate with modern tools can generate the same pipeline as 3-4 traditional SDRs."</td>
+<td><span class="badge b-orange">C3</span> <span class="badge b-purple">C4</span></td>
+<td>
+<div class="filter-box" style="margin:0;padding:8px 10px">
+<div style="font-size:11px;color:#ffaa5b;font-weight:700;margin-bottom:4px">Campaign 3: Optimise Engine — 810 cos | <span style="color:#b07aff">Campaign 4: GTM Efficiency — 783 cos</span></div>
+<strong>Who sees this:</strong> CROs, VPs, Directors at 101-500 employee companies (C3) + C4A companies with existing SDR functions (C4)<br>
+<strong>Pain addressed:</strong> Efficiency gap — existing team underperforming, need modern tooling not more headcount
+</div>
+</td>
+</tr>
+</table>
+</div>
+</details>
+
+<!-- PAID IMAGE -->
+<details class="sub-dropdown">
+<summary>🖼️ Paid Assets: Stat Graphics — 3 images (Canva)</summary>
+<div class="dropdown-content">
+<div class="section-desc">Single-image ad creatives. 10% of ad budget. Clean, branded, one stat per image.</div>
+<table>
+<tr><th style="width:30px">#</th><th style="width:70px">Format</th><th style="width:260px">Asset</th><th style="width:130px">Campaigns</th><th>Segment Targeting Details</th></tr>
+
+<tr>
+<td style="font-weight:700;color:#5bc0ff">I1</td>
+<td><span class="tag t-image">IMAGE</span></td>
+<td><strong>"Only 0.6% of UK B2B businesses at your size make it to £10M revenue"</strong><br><span style="color:#777;font-size:11px">The ones that do built a sales engine that didn't depend on the founder.</span></td>
+<td><span class="badge b-blue">C1</span></td>
+<td>
+<div class="filter-box" style="margin:0;padding:8px 10px">
+<div style="font-size:11px;color:#5b9aff;font-weight:700;margin-bottom:4px">Campaign 1: Build From Zero — 720 cos</div>
+<strong>Who:</strong> Founders at 11-50 employee companies. Survival instinct angle — speaks to founder ambition.<br>
+<strong>Source:</strong> B2B messaging doc
+</div>
+</td>
+</tr>
+
+<tr>
+<td style="font-weight:700;color:#5bc0ff">I2</td>
+<td><span class="tag t-image">IMAGE</span></td>
+<td><strong>"Your SDR team's first 90 days determine whether they stay for 2 years or leave in 6 months"</strong></td>
+<td><span class="badge b-green">C2</span></td>
+<td>
+<div class="filter-box" style="margin:0;padding:8px 10px">
+<div style="font-size:11px;color:#4ae68a;font-weight:700;margin-bottom:4px">Campaign 2: Add Outbound — 786 cos</div>
+<strong>Who:</strong> Sales Directors at C4B 11-100 who've experienced junior hire churn<br>
+<strong>C&S evidence:</strong> Environment pitch: 50.0% effectiveness, 334.7s avg talk time (longest of any pitch element)
+</div>
+</td>
+</tr>
+
+<tr>
+<td style="font-weight:700;color:#5bc0ff">I3</td>
+<td><span class="tag t-image">IMAGE</span></td>
+<td><strong>"CROs convert at 12%. Sales Managers at 1.1%. Your data tells you who to call."</strong></td>
+<td><span class="badge b-orange">C3</span> <span class="badge b-purple">C4</span></td>
+<td>
+<div class="filter-box" style="margin:0;padding:8px 10px">
+<div style="font-size:11px;color:#ffaa5b;font-weight:700;margin-bottom:4px">Campaign 3 + 4 — larger/mature companies</div>
+<strong>Who:</strong> CROs and VPs at 101-500 companies + C4A. Data people who respond to evidence.<br>
+<strong>C&S evidence:</strong> CRO: 12.0% positive rate. Sales Manager: 1.1%, 60.9% DQ. Proprietary data.
+</div>
+</td>
+</tr>
+</table>
+</div>
+</details>
+
+<!-- ORGANIC POSTS -->
+<details class="sub-dropdown">
+<summary>✍️ Organic Assets: LinkedIn Posts from Sully's Profile — 20 unique posts</summary>
+<div class="dropdown-content">
+<div class="section-desc">Published organically on Sully's personal LinkedIn. Support the paid ads with consistent messaging. 2-3 per week over 8 weeks. Some shared across campaigns (organic reach is not campaign-specific — everyone sees them).</div>
+<table>
+<tr><th style="width:30px">#</th><th style="width:70px">Format</th><th style="width:280px">Post Title / Angle</th><th style="width:120px">Primary Campaign</th><th>Why This Post / Who It Resonates With</th></tr>
+
+<tr style="background:rgba(91,154,255,0.03)"><td colspan="5" style="font-weight:700;color:#5b9aff;font-size:12px;padding:6px 10px">THEME 1: Founder Pain & First Hire (Supports Campaign 1)</td></tr>
+
+<tr>
+<td style="font-weight:700">O1</td>
+<td><span class="tag t-text">TEXT</span></td>
+<td><strong>"A CEO told me: 'We are good at strategies but we just need execution.'"</strong></td>
+<td><span class="badge b-blue">C1</span></td>
+<td>Verbatim from Happy Chimps (231s). Resonates with C3 founders who have product-market fit but no sales execution.</td>
+</tr>
+<tr>
+<td style="font-weight:700">O2</td>
+<td><span class="tag t-carousel">CAROUSEL</span></td>
+<td><strong>"The 5 stages of founder-led sales (and which one you're stuck at)"</strong><br><span style="color:#777;font-size:11px">5 slides: You ARE sales → First hire fails → Try outsourcing → Give up → Build properly</span></td>
+<td><span class="badge b-blue">C1</span></td>
+<td>1,070 C3 contacts are in this exact loop. Educates founders on where they sit in the journey.</td>
+</tr>
+<tr>
+<td style="font-weight:700">O3</td>
+<td><span class="tag t-text">TEXT</span></td>
+<td><strong>"Your first sales hire will fail. Not because they're bad — because you haven't built the foundation."</strong></td>
+<td><span class="badge b-blue">C1</span></td>
+<td>Cat A: 53 leads acknowledged this exact pain. Pre-frames the problem TSP solves before cold call.</td>
+</tr>
+<tr>
+<td style="font-weight:700">O4</td>
+<td><span class="tag t-text">TEXT</span></td>
+<td><strong>"Tried outsourced agencies for lead gen? You're not alone."</strong></td>
+<td><span class="badge b-blue">C1</span></td>
+<td>Creode (498s): "tried outsourced agencies with poor results." Common founder experience.</td>
+</tr>
+<tr>
+<td style="font-weight:700">O5</td>
+<td><span class="tag t-poll">POLL</span></td>
+<td><strong>"How does your startup handle sales right now?"</strong><br><span style="color:#777;font-size:11px">(a) I do it myself (b) Hired someone (c) Outsource (d) No outbound</span></td>
+<td><span class="badge b-blue">C1</span> <span class="badge b-green">C2</span></td>
+<td>Maps directly to C3/C1B/C4A/C4B segments. Engagement driver + micro-survey validation.</td>
+</tr>
+
+<tr style="background:rgba(74,230,138,0.03)"><td colspan="5" style="font-weight:700;color:#4ae68a;font-size:12px;padding:6px 10px">THEME 2: Team Performance & Hire Failure (Supports Campaign 2)</td></tr>
+
+<tr>
+<td style="font-weight:700">O6</td>
+<td><span class="tag t-text">TEXT</span></td>
+<td><strong>"I spoke to a Sales Director last month. Third junior hire in 18 months. All churned."</strong></td>
+<td><span class="badge b-green">C2</span></td>
+<td>Solar for Schools (606s), Clinked (469s) — tried juniors, all failed. Resonates with C4B Sales Directors.</td>
+</tr>
+<tr>
+<td style="font-weight:700">O7</td>
+<td><span class="tag t-carousel">CAROUSEL</span></td>
+<td><strong>"5 signs your SDR function is set up to fail"</strong><br><span style="color:#777;font-size:11px">Remote-only, no playbook, wrong onboarding, closers prospecting, no coaching</span></td>
+<td><span class="badge b-green">C2</span></td>
+<td>90-day programme: 34.3% eff. Physical HQ: 50.0%. Educates on what "good" looks like.</td>
+</tr>
+<tr>
+<td style="font-weight:700">O8</td>
+<td><span class="tag t-text">TEXT</span></td>
+<td><strong>"A recruiter finds you a person. We build you a machine."</strong></td>
+<td><span class="badge b-green">C2</span> <span class="badge b-orange">C3</span></td>
+<td>Pre-empts recruitment confusion (12.1% of calls). Differentiates before the cold call happens.</td>
+</tr>
+<tr>
+<td style="font-weight:700">O9</td>
+<td><span class="tag t-text">TEXT</span></td>
+<td><strong>"'Not the right time.' — The most expensive 3 words in B2B sales."</strong></td>
+<td><span class="badge b-green">C2</span></td>
+<td>"Not now": 122 objections, 51.6% eff. The 90-day reframe: "If you want someone producing in Q3, start now."</td>
+</tr>
+
+<tr style="background:rgba(255,170,91,0.03)"><td colspan="5" style="font-weight:700;color:#ffaa5b;font-size:12px;padding:6px 10px">THEME 3: GTM Engineering & Efficiency (Supports Campaigns 3 + 4)</td></tr>
+
+<tr>
+<td style="font-weight:700">O10</td>
+<td><span class="tag t-text">TEXT</span></td>
+<td><strong>"Stop hiring 5 SDRs. One person + Clay + intent data = 3x pipeline."</strong></td>
+<td><span class="badge b-blue">C1</span> <span class="badge b-orange">C3</span> <span class="badge b-purple">C4</span></td>
+<td>GTM: 61.4% effectiveness. Universal appeal across all segments. Neverbland: £40k consultant replaced.</td>
+</tr>
+<tr>
+<td style="font-weight:700">O11</td>
+<td><span class="tag t-carousel">CAROUSEL</span></td>
+<td><strong>"Old way vs new way: building a B2B sales function in 2026"</strong><br><span style="color:#777;font-size:11px">Old: 5 SDRs, manual lists. New: 1 GTM associate, Clay, AI. Cost comparison.</span></td>
+<td><span class="badge b-orange">C3</span> <span class="badge b-purple">C4</span></td>
+<td>Claimer: "email mid Q2 with subject GTM." Visual format lands with data-driven leaders.</td>
+</tr>
+<tr>
+<td style="font-weight:700">O12</td>
+<td><span class="tag t-article">ARTICLE</span></td>
+<td><strong>"What is GTM engineering? (And why every B2B startup should care)"</strong><br><span style="color:#777;font-size:11px">Long-form LinkedIn article. Concept, tools, ROI.</span></td>
+<td><span class="badge b-blue">C1</span> <span class="badge b-orange">C3</span> <span class="badge b-purple">C4</span></td>
+<td>Educational foundation piece. Founders (C1) learn the concept. Larger companies (C3/C4) validate it.</td>
+</tr>
+<tr>
+<td style="font-weight:700">O13</td>
+<td><span class="tag t-text">TEXT</span></td>
+<td><strong>"Pipeline isn't a sales problem. It's an infrastructure problem."</strong></td>
+<td><span class="badge b-green">C2</span> <span class="badge b-orange">C3</span></td>
+<td>Reframes the conversation from "hire more people" to "build the system." C4B core message.</td>
+</tr>
+
+<tr style="background:rgba(176,122,255,0.03)"><td colspan="5" style="font-weight:700;color:#b07aff;font-size:12px;padding:6px 10px">THEME 4: Credibility, Social Proof & Data (Supports All Campaigns)</td></tr>
+
+<tr>
+<td style="font-weight:700">O14</td>
+<td><span class="tag t-text">TEXT</span></td>
+<td><strong>"I was the first SDR at WorldFirst. 1 → 250 salespeople. £750M exit."</strong></td>
+<td><span class="badge b-blue">C1</span> <span class="badge b-green">C2</span> <span class="badge b-orange">C3</span></td>
+<td>WorldFirst: 93.3% when Angus deploys strategically. Credibility anchor — works for all audiences.</td>
+</tr>
+<tr>
+<td style="font-weight:700">O15</td>
+<td><span class="tag t-carousel">CAROUSEL</span></td>
+<td><strong>"From founder-led to £15M raise — Client case study"</strong><br><span style="color:#777;font-size:11px">Problem → What TSP did → Results → Quote → CTA</span></td>
+<td><span class="badge b-blue">C1</span> <span class="badge b-green">C2</span> <span class="badge b-orange">C3</span></td>
+<td>#1 ask from engaged C&S leads: "I want to see something first." Case study = the proof they need.</td>
+</tr>
+<tr>
+<td style="font-weight:700">O16</td>
+<td><span class="tag t-text">TEXT</span></td>
+<td><strong>"Why I built a physical sales floor in 2024 when everyone was going remote."</strong></td>
+<td><span class="badge b-green">C2</span> <span class="badge b-orange">C3</span></td>
+<td>Environment: 50.0% eff, 334.7s avg talk time. Contrarian take that differentiates.</td>
+</tr>
+<tr>
+<td style="font-weight:700">O17</td>
+<td><span class="tag t-text">TEXT</span></td>
+<td><strong>"We analysed 1,401 cold conversations. Here are the 4 things that book meetings."</strong></td>
+<td><span class="badge b-green">C2</span> <span class="badge b-orange">C3</span></td>
+<td>All 4 Disco Booked share: active pain, adapted pitch, specific date ask, 5-10 min conversation.</td>
+</tr>
+
+<tr style="background:rgba(255,255,255,0.03)"><td colspan="5" style="font-weight:700;color:#999;font-size:12px;padding:6px 10px">THEME 5: Objection Pre-Handling (Supports Campaigns 2 + 3)</td></tr>
+
+<tr>
+<td style="font-weight:700">O18</td>
+<td><span class="tag t-text">TEXT</span></td>
+<td><strong>"'We already have that covered.' 308 times I've heard this."</strong></td>
+<td><span class="badge b-orange">C3</span></td>
+<td>"Already have": 308 instances, 33.8% eff. Larger companies say this most. Pre-handles before the call.</td>
+</tr>
+<tr>
+<td style="font-weight:700">O19</td>
+<td><span class="tag t-text">TEXT</span></td>
+<td><strong>"'We do it in-house.' Good. We're not replacing your team."</strong></td>
+<td><span class="badge b-green">C2</span> <span class="badge b-orange">C3</span></td>
+<td>"In-house": 131 instances, 44.3% eff. Reframes TSP as additive, not competitive.</td>
+</tr>
+<tr>
+<td style="font-weight:700">O20</td>
+<td><span class="tag t-poll">POLL</span></td>
+<td><strong>"What's your biggest challenge with junior sales hires?"</strong><br><span style="color:#777;font-size:11px">(a) Finding them (b) Onboarding (c) Retaining (d) Speed to productivity</span></td>
+<td><span class="badge b-green">C2</span></td>
+<td>Maps to Cat A/G pain points. Engagement driver + validates which content to amplify.</td>
+</tr>
+</table>
+</div>
+</details>
+
+<!-- GATED CONTENT ASSETS -->
+<details class="sub-dropdown">
+<summary>📄 Gated Content Assets: PDF Documents — 2 playbooks</summary>
+<div class="dropdown-content">
+<div class="section-desc">Native LinkedIn document uploads (PDF). Used both as organic posts AND as gated content for MOFU email sequences. Each tailored to a different audience.</div>
+<table>
+<tr><th style="width:30px">#</th><th style="width:70px">Format</th><th style="width:260px">Asset</th><th style="width:130px">Campaigns</th><th>Segment Targeting Details</th></tr>
+<tr>
+<td style="font-weight:700">D1</td>
+<td><span class="tag t-doc">PDF DOC</span></td>
+<td><strong>"The Founder's First Sales Hire Playbook"</strong><br><span style="color:#777;font-size:11px">8 pages: When to hire, what to look for, how to onboard, how to measure. Data from 1,401 conversations.</span></td>
+<td><span class="badge b-blue">C1</span></td>
+<td>
+<div class="filter-box" style="margin:0;padding:8px 10px">
+<strong>For:</strong> CEO/Founders at C3 + C1B companies who haven't made their first sales hire yet<br>
+<strong>Also used as:</strong> MOFU email attachment for Campaign 1 interested leads<br>
+<strong>Language:</strong> First-person, founder-to-founder. Zero jargon. Practical frameworks.
+</div>
+</td>
+</tr>
+<tr>
+<td style="font-weight:700">D2</td>
+<td><span class="tag t-doc">PDF DOC</span></td>
+<td><strong>"The Sales Scaling Playbook"</strong><br><span style="color:#777;font-size:11px">8 pages: Team structure, pipeline infrastructure, GTM engineering frameworks. From 1,401 real conversations.</span></td>
+<td><span class="badge b-green">C2</span> <span class="badge b-orange">C3</span></td>
+<td>
+<div class="filter-box" style="margin:0;padding:8px 10px">
+<strong>For:</strong> Sales Directors and HoS at C4B companies who already have teams but need to scale<br>
+<strong>Also used as:</strong> MOFU email attachment for Campaigns 2+3 interested leads<br>
+<strong>Language:</strong> Peer-to-peer, data-driven. Includes anonymised C&S data insights.
+</div>
+</td>
+</tr>
+</table>
+</div>
+</details>
+
+<!-- SUMMARY TOTALS -->
+<!-- SUMMARY TOTALS -->
+<div class="subsection" style="margin-top:28px">
+<div class="subsection-title">📊 Asset Summary — Total Build List</div>
+</div>
+
+<div class="grid4" style="margin-bottom:16px">
+<div class="card">
+<div class="card-big blue" style="font-size:24px">8</div>
+<div class="card-label">TLA Posts</div>
+</div>
+<div class="card">
+<div class="card-big orange" style="font-size:24px">3</div>
+<div class="card-label">Video Variants</div>
+</div>
+<div class="card">
+<div class="card-big green" style="font-size:24px">3</div>
+<div class="card-label">Stat Graphics</div>
+</div>
+<div class="card">
+<div class="card-big purple" style="font-size:24px">20</div>
+<div class="card-label">Organic Posts</div>
+</div>
+</div>
+
+<table>
+<tr><th>Asset Type</th><th>Count</th><th>Used By Campaigns</th><th>Build Effort</th><th>Who Builds</th></tr>
+<tr><td>TLA Posts (Sully organic → promoted)</td><td><strong>8</strong></td><td>C1: 4 posts | C2: 2 posts | C3: 3 posts | C4: 2 posts <span style="color:#666;font-size:11px">(some shared)</span></td><td>6-8 hrs (write + Sully review)</td><td>Vion drafts, Sully posts</td></tr>
+<tr><td>Video (1 shoot, 3 script variants)</td><td><strong>3 variants</strong></td><td>C1: V1 | C2: V2 | C3+C4: V3</td><td>1-2 hrs (film + basic edit)</td><td>Sully films, team edits</td></tr>
+<tr><td>Stat Graphics (Canva)</td><td><strong>3</strong></td><td>C1: I1 | C2: I2 | C3+C4: I3</td><td>1-2 hrs</td><td>Vion / design</td></tr>
+<tr><td>Organic Text Posts</td><td><strong>12</strong></td><td>Mixed across all campaigns</td><td>4-6 hrs (batch write)</td><td>Vion drafts, Sully posts</td></tr>
+<tr><td>Organic Carousels</td><td><strong>5</strong></td><td>Mixed across all campaigns</td><td>3-4 hrs (design in Canva)</td><td>Vion / design</td></tr>
+<tr><td>Organic Polls</td><td><strong>2</strong></td><td>C1+C2</td><td>15 min</td><td>Sully posts</td></tr>
+<tr><td>LinkedIn Article (long-form)</td><td><strong>1</strong></td><td>C1 + C3 + C4</td><td>2-3 hrs</td><td>Vion drafts, Sully publishes</td></tr>
+<tr><td>PDF Playbooks</td><td><strong>2</strong></td><td>C1: D1 | C2+C3: D2</td><td>6-8 hrs each</td><td>Vion / team</td></tr>
+<tr style="background:rgba(255,255,255,0.03)"><td><strong>TOTAL UNIQUE ASSETS</strong></td><td><strong>34</strong></td><td></td><td><strong>~30-40 hrs</strong></td><td></td></tr>
+</table>
+
+<div class="note" style="margin-top:16px">
+<strong>Asset-to-campaign mapping summary:</strong><br>
+• <span style="color:#5b9aff;font-weight:700">Campaign 1 (Build From Zero)</span> — uses T1, T2, T3, T4, V1, I1, O1-O5, O10, O12, O14, O15, D1 → <strong>16 assets</strong><br>
+• <span style="color:#4ae68a;font-weight:700">Campaign 2 (Add Outbound)</span> — uses T5, T6, T7, V2, I2, O5-O9, O13, O15-O17, O19, O20, D2 → <strong>16 assets</strong><br>
+• <span style="color:#ffaa5b;font-weight:700">Campaign 3 (Optimise Engine)</span> — uses T6, T7, T8, V3, I3, O8, O10-O11, O13-O19, D2 → <strong>15 assets</strong><br>
+• <span style="color:#b07aff;font-weight:700">Campaign 4 (GTM Efficiency)</span> — uses T3, T8, V3, I3, O10-O12 → <strong>6 assets</strong> (test campaign, shares from C3)
+</div>
+
+</div>
+</div>
+</details>
+
+<!-- ========================================== -->
+<!-- TLA POST DRAFTS — FULL COPY FOR APPROVAL -->
+<!-- ========================================== -->
+<details class="section-dropdown" style="margin-top:40px;border-top:2px solid #333;padding-top:0">
+<summary style="padding-top:32px">✏️ TLA Post Drafts — Full Copy for Sully's LinkedIn</summary>
+<div class="dropdown-content">
+<div class="section-desc">All 8 TLA posts drafted in Sully's voice. Click each to expand the full copy. Each must work as an organic LinkedIn post AND as a promoted Thought Leader Ad via Tom Tigwell.</div>
+
+<div class="note">
+<strong>Structure:</strong> Hook (first 2 lines visible in feed) → insight/story → reframe → soft CTA. No hard sell. The post itself IS the value.<br>
+<strong>Length:</strong> 150-250 words each. LinkedIn shows ~2 lines before "see more" — those lines must hook.<br>
+<strong>Build order:</strong> <strong style="color:#4ae68a">P0 (launch ads):</strong> T1 + T5 + T7 → <strong style="color:#ffaa5b">P1 (week 2):</strong> T3 + T6 + T8 → <strong style="color:#888">P2 (week 3):</strong> T2 + T4
+</div>
+
+<div class="tla-section-break">— Campaign 1: Build From Zero (Founders) —</div>
+
+<!-- T1 -->
+<div class="tla-card" style="border-left:4px solid #5b9aff">
+<div class="tla-header" onclick="toggleTLA('t1')">
+<div style="display:flex;align-items:flex-start;flex:1">
+<span class="tla-id" style="color:#5b9aff">T1</span>
+<div>
+<span class="tla-title">"The Founder Sales Trap"</span>
+<div class="tla-meta"><span class="badge b-blue">C1</span> &nbsp;Campaign 1: Build From Zero — 720 cos &nbsp;|&nbsp; <span style="color:#4ae68a">P0 — Post first</span></div>
+</div>
+</div>
+<button class="toggle-btn" id="btn-t1">Expand ▼</button>
+</div>
+<div class="tla-body" id="body-t1">
+<div class="linkedin-mock">Most founders I meet are stuck in the same trap.
+
+They've built a great product. They've closed their first 10-20 customers. Revenue is at £1-2M. And then it just... stops growing.
+
+The reason is pretty simple. The founder IS the sales team.
+
+I've seen this play out hundreds of times now. The founder closes deals because they know the product better than anyone. They're passionate, credible, clients trust them. But there's only one of them. They can't be in two meetings at once and they definitely can't scale themselves.
+
+So they try to hire. A junior SDR, maybe an outsourced agency. It doesn't work. The SDR churns in 3 months. The agency generates leads that go nowhere. And the founder goes right back to doing it themselves.
+
+That loop is what kills growth at the £1-2M mark. Try, fail, revert. Try again, fail again, revert again.
+
+The fix isn't finding a better hire. It's building the infrastructure before you hire anyone. You need a proper ICP, not "anyone who'll pay" but an actual list of companies that look like your best customers. You need a repeatable outbound process. An environment where junior talent can actually learn the job. And tools that make one person as effective as three.
+
+I was the first SDR at WorldFirst. We scaled from 1 to 250 salespeople before the company exited for £750M.
+
+The thing that made it work wasn't talent. It was the system around the talent.
+
+If you're a founder stuck doing sales, honestly, you're not bad at sales. You just haven't built the machine yet.</div>
+<div class="tla-evidence">
+<strong>C&S transcript backing:</strong>
+<div class="data-row"><span class="data-tag">C3: 16.5% engagement (highest)</span><span class="data-tag">Happy Chimps CEO: "good at strategies but just need execution"</span><span class="data-tag">Clinked CEO: "tried outbound but it didn't work"</span><span class="data-tag">CASCO Pet: "spending silly amounts of time not selling"</span></div>
+</div>
+</div>
+</div>
+
+<!-- T2 -->
+<div class="tla-card" style="border-left:4px solid #5b9aff">
+<div class="tla-header" onclick="toggleTLA('t2')">
+<div style="display:flex;align-items:flex-start;flex:1">
+<span class="tla-id" style="color:#5b9aff">T2</span>
+<div>
+<span class="tla-title">"What Investors Question First"</span>
+<div class="tla-meta"><span class="badge b-blue">C1</span> &nbsp;Campaign 1: Build From Zero &nbsp;|&nbsp; <span style="color:#888">P2 — Week 3 swap</span></div>
+</div>
+</div>
+<button class="toggle-btn" id="btn-t2">Expand ▼</button>
+</div>
+<div class="tla-body" id="body-t2">
+<div class="linkedin-mock">When investors look at your business, they don't start with the product.
+
+They start with the revenue engine.
+
+Is it a system, or is it a person?
+
+If the answer is "our founder closes most deals," that's a single point of failure. It's not a business yet.
+
+I've sat across the table from hundreds of founders building their first sales function. The ones who get funded, and more importantly stay funded, have one thing in common. They built a repeatable sales process before they tried to scale it.
+
+That means a pipeline that generates opportunities without the founder on every call. It means a sales hire who was properly onboarded, not just handed a laptop and a CRM login. It means tools and data driving your targeting instead of gut feel. And it means a 90-day ramp plan, not a 90-day prayer.
+
+Before WorldFirst exited for £750M, we didn't have the best product in the market. We had the best sales infrastructure. The people were good, but the system made them great.
+
+Look, if you're raising or planning to raise, your investors will ask about your revenue engine. Make sure the answer isn't "me."</div>
+<div class="tla-evidence">
+<strong>C&S transcript backing:</strong>
+<div class="data-row"><span class="data-tag">WorldFirst: 93.3% effective strategically</span><span class="data-tag">Converted Enders from "call me in a year" → Disco Booked</span><span class="data-tag">29 CEO+C1B combos in list</span></div>
+</div>
+</div>
+</div>
+
+<!-- T3 -->
+<div class="tla-card" style="border-left:4px solid #5b9aff">
+<div class="tla-header" onclick="toggleTLA('t3')">
+<div style="display:flex;align-items:flex-start;flex:1">
+<span class="tla-id" style="color:#5b9aff">T3</span>
+<div>
+<span class="tla-title">"One Person + Modern Tools = 3x Pipeline"</span>
+<div class="tla-meta"><span class="badge b-blue">C1</span> <span class="badge b-purple">C4</span> &nbsp;Campaigns 1 + 4 &nbsp;|&nbsp; <span style="color:#ffaa5b">P1 — Week 2</span></div>
+</div>
+</div>
+<button class="toggle-btn" id="btn-t3">Expand ▼</button>
+</div>
+<div class="tla-body" id="body-t3">
+<div class="linkedin-mock">The old way to build outbound: hire 5 SDRs, give them a phone and a list, hope for the best.
+
+The new way: one GTM Associate with Clay, intent data, and AI-driven personalisation.
+
+I'm not exaggerating when I say one well-equipped person can generate the same pipeline as 3-4 traditional SDRs.
+
+So what does that actually look like in practice? Clay builds hyper-targeted prospect lists based on real signals like funding rounds, job postings, and tech stack changes instead of bought databases. AI personalises messaging at scale, and I don't mean "Hi {First Name}, I noticed your company..." but genuinely relevant outreach that references what's actually happening at their business. Intent data tells you when to reach out, not just who. And every single touchpoint is tracked, tested, and optimised.
+
+The result is one person generating 50-100 qualified conversations per month. Not cold leads. Actual conversations with people who match your ICP and are showing buying signals right now.
+
+We call this GTM engineering. It's what we train people to do every day in our London office.
+
+For founders who think they can't afford a sales team, the truth is you can't afford not to have this. One person, properly equipped, changes everything. And the cost is a fraction of what you'd pay a recruiter for a hire that might not work out.</div>
+<div class="tla-evidence">
+<strong>C&S transcript backing:</strong>
+<div class="data-row"><span class="data-tag">GTM pitch: 61.4% effectiveness (highest)</span><span class="data-tag">211.5s avg talk time</span><span class="data-tag">Alphaletz: "interested in GTM only"</span><span class="data-tag">Neverbland: £40k/yr consultant, wants GTM in-house</span><span class="data-tag">Claimer: "email mid Q2 with subject GTM"</span></div>
+</div>
+</div>
+</div>
+
+<!-- T4 -->
+<div class="tla-card" style="border-left:4px solid #5b9aff">
+<div class="tla-header" onclick="toggleTLA('t4')">
+<div style="display:flex;align-items:flex-start;flex:1">
+<span class="tla-id" style="color:#5b9aff">T4</span>
+<div>
+<span class="tla-title">"Don't Hire Like a Big Company"</span>
+<div class="tla-meta"><span class="badge b-blue">C1</span> &nbsp;Campaign 1: Build From Zero &nbsp;|&nbsp; <span style="color:#888">P2 — Week 3 swap</span></div>
+</div>
+</div>
+<button class="toggle-btn" id="btn-t4">Expand ▼</button>
+</div>
+<div class="tla-body" id="body-t4">
+<div class="linkedin-mock">"We're too small for that."
+
+I hear this from founders every week. They assume building a proper sales function is something only 100+ employee companies do.
+
+It's not. Our smallest client right now is a team of 3 people.
+
+Most founders get their first sales hire completely wrong. They hire like a big company. They write a job description for a "Senior Account Executive," offer £50-60k, expect them to bring their own pipeline, and wonder why it doesn't work.
+
+A 15-person startup doesn't need a senior AE. It needs a pipeline builder. Someone who wakes up every day thinking about how to get more qualified conversations in front of the founder. Not someone who sits and waits for inbound.
+
+And that person, your first real sales hire, needs three things to succeed. First, the right environment, which means not working from their bedroom. Second, proper onboarding, which means not "here's Salesforce, good luck." And third, someone senior coaching them every single day, not a monthly 1:1.
+
+That's exactly what our 90-day programme does. We hire them, train them in our London office alongside our leadership team, and hand you a producing team member. Not a CV.
+
+Your company isn't too small. Your approach to hiring might just be too big.</div>
+<div class="tla-evidence">
+<strong>C&S transcript backing:</strong>
+<div class="data-row"><span class="data-tag">"Too small" rebuttal: 34.9% effective</span><span class="data-tag">CASCO Pet: team of 3, booked Disco</span><span class="data-tag">Lois: "I'm not sure whether I'm appealing enough" → booked</span></div>
+</div>
+</div>
+</div>
+
+<div class="tla-section-break">— Campaign 2: Add Outbound (Sales Directors, C4B 11-100) —</div>
+
+<!-- T5 -->
+<div class="tla-card" style="border-left:4px solid #4ae68a">
+<div class="tla-header" onclick="toggleTLA('t5')">
+<div style="display:flex;align-items:flex-start;flex:1">
+<span class="tla-id" style="color:#4ae68a">T5</span>
+<div>
+<span class="tla-title">"80% of First Sales Hires Fail"</span>
+<div class="tla-meta"><span class="badge b-green">C2</span> &nbsp;Campaign 2: Add Outbound — 786 cos &nbsp;|&nbsp; <span style="color:#4ae68a">P0 — Post first</span></div>
+</div>
+</div>
+<button class="toggle-btn" id="btn-t5">Expand ▼</button>
+</div>
+<div class="tla-body" id="body-t5">
+<div class="linkedin-mock">80% of first sales hires fail within 12 months.
+
+And almost never because the person was wrong.
+
+I've spent the last year analysing what actually happens when companies hire junior and mid-level salespeople. We've had over 1,400 conversations with B2B companies across the UK. The pattern is depressingly consistent.
+
+You hire someone promising. Give them a laptop, a CRM login, and a target. Tell them to "get on the phones." Three months later they're not producing. Five months later they're gone. And you're back to square one.
+
+The hire wasn't the problem. The environment was.
+
+Junior salespeople need three things to succeed, and most companies provide zero of them. They need a physical sales floor with energy, competition, and peer learning instead of a spare desk at home. They need senior coaching every day, not every month. "How was that call?" not "how was your quarter?" And they need a structured 90-day ramp with weekly milestones instead of "figure it out."
+
+We built our entire business around this insight. We have a physical office in London. Junior talent sits alongside our senior leadership team 5 days a week. They hear different pitches, different objections, different approaches all day long.
+
+The ones who come through our programme don't churn in 3 months. They produce.
+
+If you've been through the hire-fail-repeat cycle, the problem probably isn't who you're hiring. It's where and how.</div>
+<div class="tla-evidence">
+<strong>C&S transcript backing:</strong>
+<div class="data-row"><span class="data-tag">90-day: 34.3% eff</span><span class="data-tag">Environment: 50.0%, 334.7s avg</span><span class="data-tag">Solar for Schools: "hired juniors, didn't work — wrong onboarding, remote"</span><span class="data-tag">Creode: "tried agencies, poor results"</span><span class="data-tag">Cat A: 53 hire-pain leads</span></div>
+</div>
+</div>
+</div>
+
+<!-- T6 -->
+<div class="tla-card" style="border-left:4px solid #4ae68a">
+<div class="tla-header" onclick="toggleTLA('t6')">
+<div style="display:flex;align-items:flex-start;flex:1">
+<span class="tla-id" style="color:#4ae68a">T6</span>
+<div>
+<span class="tla-title">"Your Closers Shouldn't Be Building Pipeline"</span>
+<div class="tla-meta"><span class="badge b-green">C2</span> <span class="badge b-orange">C3</span> &nbsp;Campaigns 2 + 3 &nbsp;|&nbsp; <span style="color:#ffaa5b">P1 — Week 2</span></div>
+</div>
+</div>
+<button class="toggle-btn" id="btn-t6">Expand ▼</button>
+</div>
+<div class="tla-body" id="body-t6">
+<div class="linkedin-mock">Your best salesperson is also your worst prospector.
+
+Not because they can't do it. Because it's a complete waste of their time.
+
+Every hour a senior closer spends building lists, writing cold emails, and chasing unqualified leads is an hour they're not closing deals. And you can see it everywhere. Longer sales cycles. Missed targets. A founder wondering why revenue isn't growing despite having "a sales team."
+
+I see this in almost every B2B company between 10 and 250 employees. The Sales Director is doing discovery and closing and managing and prospecting all at once. There's no dedicated pipeline function. "Outbound" means the founder sends a few LinkedIn messages when they remember. And the junior hires who were supposed to do the prospecting? They churned months ago.
+
+Pipeline isn't a sales problem. It's an infrastructure problem.
+
+The fix is simple in theory: separate prospecting from closing. Give pipeline its own person, its own tools, its own process.
+
+That's what we do. We hire, train, and embed a dedicated pipeline builder into your business. They sit in our London office with our leadership team for 90 days, learning your ICP, your messaging, your tools. By the time they're on your desk, they're producing.
+
+Your closers close. Your pipeline builder builds pipeline. Everyone does what they're actually good at.
+
+For growing companies, that's the difference between hitting target and hoping for the best.</div>
+<div class="tla-evidence">
+<strong>C&S transcript backing:</strong>
+<div class="data-row"><span class="data-tag">C4B: 4.1% positive, #1 volume segment</span><span class="data-tag">3 of 4 Disco Booked from C4B</span><span class="data-tag">"In-house": 44.3% eff</span><span class="data-tag">Pureprint: "no proper demand gen"</span><span class="data-tag">Karma Kitchen: "loved the idea, wanted SDR"</span></div>
+</div>
+</div>
+</div>
+
+<div class="tla-section-break">— Campaigns 2+3: Recruiter Differentiation —</div>
+
+<!-- T7 -->
+<div class="tla-card" style="border-left:4px solid #ffaa5b">
+<div class="tla-header" onclick="toggleTLA('t7')">
+<div style="display:flex;align-items:flex-start;flex:1">
+<span class="tla-id" style="color:#ffaa5b">T7</span>
+<div>
+<span class="tla-title">"We Get Compared to Recruiters"</span>
+<div class="tla-meta"><span class="badge b-green">C2</span> <span class="badge b-orange">C3</span> &nbsp;Campaigns 2 + 3 &nbsp;|&nbsp; <span style="color:#4ae68a">P0 — Post first</span></div>
+</div>
+</div>
+<button class="toggle-btn" id="btn-t7">Expand ▼</button>
+</div>
+<div class="tla-body" id="body-t7">
+<div class="linkedin-mock">We get compared to recruiters a lot.
+
+I understand why. On the surface, it sounds similar: "we help you hire salespeople."
+
+But honestly, the similarity ends there.
+
+A recruiter finds you a person. They send CVs, you interview, you hire, they invoice. Their job is done. What happens next, the onboarding, the training, whether the person actually works out, that's your problem.
+
+What we actually do is build you a sales function.
+
+We find the right person. And we look for aptitude over experience, drive over a polished CV. We put them through a 90-day programme in our London office where they sit next to our senior leadership team 5 days a week. They learn your ICP, your tools, your pitch, your market by doing the work, not by reading a handbook. We build the playbook alongside them. The outreach sequences, the reporting, the infrastructure. After 90 days, you get a trained, producing team member and the systems they've been using.
+
+The person is your employee from day one. The knowledge is your IP. The systems stay with you.
+
+A recruiter gives you a CV and an invoice.
+We give you a trained rep, a playbook, a tech stack, and pipeline.
+
+That's not recruitment. That's building a machine.</div>
+<div class="tla-evidence">
+<strong>C&S transcript backing:</strong>
+<div class="data-row"><span class="data-tag">12.1% of calls: recruitment confusion</span><span class="data-tag">67.3% DQ when confused</span><span class="data-tag">"Not a recruiter" phrasing: 0% positive, 75% DQ</span><span class="data-tag">Conor: zero confusion in 114 calls — framing works</span></div>
+</div>
+</div>
+</div>
+
+<div class="tla-section-break">— Campaigns 3+4: Data-Led GTM —</div>
+
+<!-- T8 -->
+<div class="tla-card" style="border-left:4px solid #b07aff">
+<div class="tla-header" onclick="toggleTLA('t8')">
+<div style="display:flex;align-items:flex-start;flex:1">
+<span class="tla-id" style="color:#b07aff">T8</span>
+<div>
+<span class="tla-title">"61% vs 23% — Framing Matters"</span>
+<div class="tla-meta"><span class="badge b-orange">C3</span> <span class="badge b-purple">C4</span> &nbsp;Campaigns 3 + 4 &nbsp;|&nbsp; <span style="color:#ffaa5b">P1 — Week 2</span></div>
+</div>
+</div>
+<button class="toggle-btn" id="btn-t8">Expand ▼</button>
+</div>
+<div class="tla-body" id="body-t8">
+<div class="linkedin-mock">We analysed 1,401 cold-call conversations over 8 weeks.
+
+One finding changed how we think about everything.
+
+When we pitched "GTM engineering," using modern tools to build pipeline, the conversation converted 61% of the time. When we pitched "we help you hire salespeople," same company, same service, it converted 23%.
+
+Same product. Different framing. Nearly 3x the result.
+
+The insight is straightforward: your prospects don't want to hear about hiring. They want to hear about efficiency.
+
+So what does "GTM engineering" actually mean in practice? It means one person using Clay, intent signals, and AI to build targeted prospect lists from real data instead of bought databases. It means multi-variant messaging personalised to each prospect's situation instead of templates. It means signals that tell you when to reach out, things like a funding round, a new sales hire posted, a tech stack change, rather than just spraying emails and praying. And it means everything is measured. Cost per conversation, conversion by segment, pipeline per rep.
+
+The companies seeing the best results right now aren't hiring more salespeople. They're making the ones they have dramatically more effective.
+
+We found this in our own data, and it changed our entire approach.
+
+If your outbound isn't working, the problem might not be your team. It might be how you're framing what you do.
+
+<em style="color:#777">Data from 10,024 dial attempts and 1,401 conversations, Jan-Mar 2026. Analysis by The Sales People.</em></div>
+<div class="tla-evidence">
+<strong>C&S transcript backing:</strong>
+<div class="data-row"><span class="data-tag">GTM: 61.4% vs HQ: 22.8%</span><span class="data-tag">GTM avg 211.5s conversations</span><span class="data-tag">Proprietary data — no competitor can claim</span><span class="data-tag">Teaches while selling</span></div>
+</div>
+</div>
+</div>
+
+<!-- Build Priority Summary -->
+<div style="background:#111118;border:1px solid #222;border-radius:12px;padding:20px;margin-top:24px">
+<div style="font-size:15px;font-weight:700;color:#fff;margin-bottom:12px">Build Priority & Posting Order</div>
+<table>
+<tr><th>Post</th><th>Campaigns</th><th>Priority</th><th>Order</th><th>Status</th></tr>
+<tr><td><strong style="color:#5b9aff">T1</strong> Founder Sales Trap</td><td><span class="badge b-blue">C1</span></td><td style="color:#4ae68a">P0 — Unblocks ads</td><td>1st</td><td>Draft ready ✏️</td></tr>
+<tr><td><strong style="color:#4ae68a">T5</strong> 80% of Hires Fail</td><td><span class="badge b-green">C2</span></td><td style="color:#4ae68a">P0 — Unblocks ads</td><td>2nd</td><td>Draft ready ✏️</td></tr>
+<tr><td><strong style="color:#ffaa5b">T7</strong> Recruiter Differentiation</td><td><span class="badge b-green">C2</span> <span class="badge b-orange">C3</span></td><td style="color:#4ae68a">P0 — Unblocks ads</td><td>3rd</td><td>Draft ready ✏️</td></tr>
+<tr><td><strong style="color:#5b9aff">T3</strong> GTM Engineering</td><td><span class="badge b-blue">C1</span> <span class="badge b-purple">C4</span></td><td style="color:#ffaa5b">P1 — Week 2 rotation</td><td>4th</td><td>Draft ready ✏️</td></tr>
+<tr><td><strong style="color:#4ae68a">T6</strong> Closers ≠ Prospectors</td><td><span class="badge b-green">C2</span> <span class="badge b-orange">C3</span></td><td style="color:#ffaa5b">P1 — Week 2 rotation</td><td>5th</td><td>Draft ready ✏️</td></tr>
+<tr><td><strong style="color:#b07aff">T8</strong> 61% vs 23%</td><td><span class="badge b-orange">C3</span> <span class="badge b-purple">C4</span></td><td style="color:#ffaa5b">P1 — Week 2 rotation</td><td>6th</td><td>Draft ready ✏️</td></tr>
+<tr><td><strong style="color:#5b9aff">T2</strong> What Investors Question</td><td><span class="badge b-blue">C1</span></td><td style="color:#888">P2 — Week 3 swap</td><td>7th</td><td>Draft ready ✏️</td></tr>
+<tr><td><strong style="color:#5b9aff">T4</strong> Don't Hire Like Big Co</td><td><span class="badge b-blue">C1</span></td><td style="color:#888">P2 — Week 3 swap</td><td>8th</td><td>Draft ready ✏️</td></tr>
+</table>
+<p style="color:#666;font-size:11px;margin-top:10px"><strong>Minimum to launch ads:</strong> T1 + T5 + T7 (one per core campaign). Post organically on Sully's profile, let them get engagement, then Tom Tigwell promotes as TLAs.</p>
+</div>
+
+
+</div>
+</details>
+
+<!-- ========================================== -->
+<!-- ORGANIC POST DRAFTS — FULL COPY -->
+<!-- ========================================== -->
+<details class="section-dropdown" style="margin-top:40px;border-top:2px solid #333;padding-top:0">
+<summary style="padding-top:32px">✍️ Organic Post Drafts — Full Copy for Sully's LinkedIn (20 posts)</summary>
+<div class="dropdown-content">
+<div class="section-desc">All 20 organic posts drafted in Sully's voice. Published on his personal LinkedIn to support the paid TLA campaigns. 2-3 per week over 8 weeks. Grouped by theme — click each to expand.</div>
+
+<div class="note">
+<strong>These are organic — not promoted.</strong> They support the paid TLAs by reinforcing the same messaging organically. Everyone in Sully's network sees them, not just matched audiences.<br>
+<strong>Posting cadence:</strong> 2-3 per week. Mix formats (text, carousel, poll, article) to keep the feed varied.<br>
+<strong>Voice:</strong> First-person Sully. Conversational. Insight-led. No corporate speak.
+</div>
+
+<div class="tla-section-break">— Theme 1: Founder Pain & First Hire (Supports Campaign 1) —</div>
+
+<!-- O1 -->
+<div class="tla-card" style="border-left:4px solid #5b9aff">
+<div class="tla-header" onclick="toggleTLA('o1')">
+<div style="display:flex;align-items:flex-start;flex:1">
+<span class="tla-id" style="color:#5b9aff">O1</span>
+<div>
+<span class="tla-title">"Good at Strategies, Need Execution" — <span class="tag t-text">TEXT</span></span>
+<div class="tla-meta"><span class="badge b-blue">C1</span> &nbsp;Week 1</div>
+</div>
+</div>
+<button class="toggle-btn" id="btn-o1">Expand ▼</button>
+</div>
+<div class="tla-body" id="body-o1">
+<div class="linkedin-mock">A CEO told me last month: "We are good at strategies but we just need execution."
+
+I hear some version of this every single week.
+
+The founder has product-market fit. Customers love what they've built. Revenue is growing, but only because the founder is personally closing every deal.
+
+The strategy is there. The vision is there. What's missing is the infrastructure to execute it without the founder on every call.
+
+And that infrastructure is pretty specific. It's a defined ICP. Not "anyone who'll pay" but an actual list of 200 companies that match your best customers. It's a repeatable outreach process instead of the founder sending LinkedIn messages whenever they remember. It's a person whose only job is filling the pipeline, rather than the founder squeezing it in between product meetings. And it's tools that make that one person 3x as effective as they'd be with just a phone and a spreadsheet.
+
+The gap between strategy and execution isn't talent. It's systems.
+
+If you're a founder nodding along to this, you're not alone. And you're not bad at sales. You just haven't built the machine yet.</div>
+<div class="tla-evidence">
+<strong>Source:</strong> Verbatim from Happy Chimps CEO, Dinesh Mandawala (231s, C3 segment). C3 = 16.5% engagement rate — highest of any segment.
+</div>
+</div>
+</div>
+
+<!-- O2 -->
+<div class="tla-card" style="border-left:4px solid #5b9aff">
+<div class="tla-header" onclick="toggleTLA('o2')">
+<div style="display:flex;align-items:flex-start;flex:1">
+<span class="tla-id" style="color:#5b9aff">O2</span>
+<div>
+<span class="tla-title">"5 Stages of Founder-Led Sales" — <span class="tag t-carousel">CAROUSEL</span></span>
+<div class="tla-meta"><span class="badge b-blue">C1</span> &nbsp;Week 1 &nbsp;|&nbsp; 5 slides</div>
+</div>
+</div>
+<button class="toggle-btn" id="btn-o2">Expand ▼</button>
+</div>
+<div class="tla-body" id="body-o2">
+<div class="subsection-title">📝 Carousel Slide Copy</div>
+<div class="linkedin-mock"><strong>SLIDE 1 (Cover):</strong>
+The 5 Stages of Founder-Led Sales
+(And which one you're stuck at)
+
+<strong>SLIDE 2:</strong>
+Stage 1: "I AM the sales team"
+You're closing every deal. Revenue is growing. But it only grows when you sell. Take a week off and the pipeline stops completely.
+
+<strong>SLIDE 3:</strong>
+Stage 2: "The first hire didn't work"
+You hired someone. They churned in 3-6 months. Too junior, no onboarding, wrong environment. You went back to doing it yourself.
+
+<strong>SLIDE 4:</strong>
+Stage 3: "Let's try outsourcing"
+An agency, a consultant, a part-time SDR. Leads come in but they're not qualified. Nobody knows your product like you do. Money spent, meetings not booked.
+
+<strong>SLIDE 5:</strong>
+Stage 4: "Maybe outbound just doesn't work for us"
+You've tried and failed twice. You conclude your industry is different. You go back to referrals and inbound. Growth plateaus.
+
+<strong>SLIDE 6:</strong>
+Stage 5: "Build it properly"
+Stop hiring people. Start building infrastructure. ICP, process, tools, environment, coaching. Then hire into a system that's actually ready for them.
+
+Most founders loop between stages 2, 3, and 4 for years. The ones who break through skip straight to 5.</div>
+<div class="linkedin-mock" style="margin-top:8px"><strong>Post caption:</strong>
+I've watched hundreds of founders go through these stages. Most get stuck in the loop between 2, 3, and 4. Hire, fail, outsource, fail, give up, repeat.
+
+The ones who break through? They stop hiring people and start building infrastructure.
+
+Which stage are you at?</div>
+<div class="tla-evidence">
+<strong>Source:</strong> 1,070 C3 contacts in the merged list are in this exact loop. Cat A (53 leads) all acknowledged hire failure. Creode (498s): "tried outsourced agencies with poor results."
+</div>
+</div>
+</div>
+
+<!-- O3 -->
+<div class="tla-card" style="border-left:4px solid #5b9aff">
+<div class="tla-header" onclick="toggleTLA('o3')">
+<div style="display:flex;align-items:flex-start;flex:1">
+<span class="tla-id" style="color:#5b9aff">O3</span>
+<div>
+<span class="tla-title">"Your First Sales Hire Will Fail" — <span class="tag t-text">TEXT</span></span>
+<div class="tla-meta"><span class="badge b-blue">C1</span> &nbsp;Week 2</div>
+</div>
+</div>
+<button class="toggle-btn" id="btn-o3">Expand ▼</button>
+</div>
+<div class="tla-body" id="body-o3">
+<div class="linkedin-mock">Your first sales hire will fail.
+
+Not because they're bad. Because you haven't built the foundation.
+
+I've seen it play out the same way dozens of times. The founder hires someone promising. Day 1, they get a laptop, a CRM login, and a vague instruction to "start reaching out." By month 3, they're not producing. By month 6, they're gone.
+
+The founder blames the hire. "They didn't have the right attitude." "They couldn't sell our product." "They just weren't good enough."
+
+But the real reason is that there was nothing around them. No defined ICP. No playbook. No coaching. No environment. No tools.
+
+You wouldn't hire an engineer and tell them "just build something." You'd give them a spec, a codebase, a team, a process. Sales is no different.
+
+Before you hire anyone, build three things. A clear ICP, meaning who are your best 100 target companies and why. A repeatable process, meaning what does outreach actually look like step by step. And an environment, meaning where will this person sit, who will coach them, how will they learn.
+
+Build the foundation first. Then hire into it.
+
+The person won't fail. The system won't let them.</div>
+<div class="tla-evidence">
+<strong>Source:</strong> Cat A: 53 leads acknowledged hire-failure pain. Solar for Schools (606s): "hired juniors, didn't work — wrong onboarding, fully remote." 90-day programme pitch: 34.3% effectiveness.
+</div>
+</div>
+</div>
+
+<!-- O4 -->
+<div class="tla-card" style="border-left:4px solid #5b9aff">
+<div class="tla-header" onclick="toggleTLA('o4')">
+<div style="display:flex;align-items:flex-start;flex:1">
+<span class="tla-id" style="color:#5b9aff">O4</span>
+<div>
+<span class="tla-title">"Tried Outsourced Agencies?" — <span class="tag t-text">TEXT</span></span>
+<div class="tla-meta"><span class="badge b-blue">C1</span> &nbsp;Week 2</div>
+</div>
+</div>
+<button class="toggle-btn" id="btn-o4">Expand ▼</button>
+</div>
+<div class="tla-body" id="body-o4">
+<div class="linkedin-mock">Tried outsourced agencies for lead gen? You're not alone.
+
+Most founders I talk to have tried at least one. And it usually goes something like this.
+
+Month 1: "Great, someone else is handling outbound." Month 2: "The leads are coming in but none of them are right." Month 3: "We've spent £5-10k and booked two meetings. Neither converted."
+
+The fundamental problem isn't the agency. It's the model.
+
+An outsourced agency doesn't know your product. They don't feel your customers' pain. They're running the same playbook they run for 20 other clients, and your prospect can feel that in every email and every call.
+
+The companies that crack outbound do it with someone on the inside. Someone who learns your ICP, your language, your market. Someone who sits with your team and hears the actual conversations happening every day. Someone who iterates the messaging based on real feedback rather than a monthly report.
+
+The difference between in-house and outsourced isn't cost. It's context.
+
+An outsourced agency rents you activity. What you actually need is owned capability.</div>
+<div class="tla-evidence">
+<strong>Source:</strong> Creode, Ben Rees (498s, Interested): "tried outsourced agencies with poor results." Clinked, Tayfun Bilsel (469s): "tried outbound but it didn't work." Common founder experience across C3 segment.
+</div>
+</div>
+</div>
+
+<!-- O5 -->
+<div class="tla-card" style="border-left:4px solid #5b9aff">
+<div class="tla-header" onclick="toggleTLA('o5')">
+<div style="display:flex;align-items:flex-start;flex:1">
+<span class="tla-id" style="color:#5b9aff">O5</span>
+<div>
+<span class="tla-title">"How Does Your Startup Handle Sales?" — <span class="tag t-poll">POLL</span></span>
+<div class="tla-meta"><span class="badge b-blue">C1</span> <span class="badge b-green">C2</span> &nbsp;Week 2</div>
+</div>
+</div>
+<button class="toggle-btn" id="btn-o5">Expand ▼</button>
+</div>
+<div class="tla-body" id="body-o5">
+<div class="linkedin-mock"><strong>Poll question:</strong>
+How does your startup handle sales right now?
+
+<strong>Options:</strong>
+(a) I do it myself (founder-led)
+(b) I hired someone (SDR/AE/Sales hire)
+(c) We outsource it (agency/consultant)
+(d) We don't do outbound
+
+<strong>Post caption:</strong>
+Genuinely curious. Every week I speak to founders at different stages of building their sales function.
+
+Some are doing everything themselves. Some have tried hiring and it didn't work out. Some have outsourced and aren't sure about the results.
+
+Where are you right now?
+
+(I'll share what I'm seeing in the data in a follow-up post.)</div>
+<div class="tla-evidence">
+<strong>Source:</strong> Maps directly to C3/C1B/C4A/C4B segments. 2-3x engagement vs standard posts. Also functions as a micro-survey to validate ICP assumptions.
+</div>
+</div>
+</div>
+
+<div class="tla-section-break">— Theme 2: Team Performance & Hire Failure (Supports Campaign 2) —</div>
+
+<!-- O6 -->
+<div class="tla-card" style="border-left:4px solid #4ae68a">
+<div class="tla-header" onclick="toggleTLA('o6')">
+<div style="display:flex;align-items:flex-start;flex:1">
+<span class="tla-id" style="color:#4ae68a">O6</span>
+<div>
+<span class="tla-title">"Third Junior Hire. All Churned." — <span class="tag t-text">TEXT</span></span>
+<div class="tla-meta"><span class="badge b-green">C2</span> &nbsp;Week 3</div>
+</div>
+</div>
+<button class="toggle-btn" id="btn-o6">Expand ▼</button>
+</div>
+<div class="tla-body" id="body-o6">
+<div class="linkedin-mock">I spoke to a Sales Director last month. Third junior hire in 18 months. All churned.
+
+He said: "I don't know what I'm doing wrong."
+
+He wasn't doing anything wrong. He was doing what everyone does. Write a job ad for a "hungry, self-motivated SDR." Interview 10 people, pick the most enthusiastic one. Give them a desk, usually at home, plus a CRM login and a target. Check in once a week: "How's it going?" And then by month 3, they're not hitting numbers. By month 5, they've quit.
+
+The person wasn't the problem. The setup was.
+
+Junior salespeople actually need four things. A physical environment with other salespeople around them, not their bedroom. Daily coaching, not weekly check-ins. I mean "how was that call?" not "how was your month?" A structured 90-day ramp with week by week milestones, not "figure it out." And senior people they can learn from by osmosis, hearing pitches and objections and closes all day long.
+
+Most companies provide zero of these four things. Then wonder why the hire didn't work.
+
+If you've been through this cycle, the problem isn't who you're hiring. It's what you're hiring them into.</div>
+<div class="tla-evidence">
+<strong>Source:</strong> Solar for Schools (606s): "hired juniors, didn't work — wrong onboarding, fully remote." Clinked (469s): "tried outbound, didn't work." Environment pitch: 50.0% effectiveness, 334.7s avg talk time.
+</div>
+</div>
+</div>
+
+<!-- O7 -->
+<div class="tla-card" style="border-left:4px solid #4ae68a">
+<div class="tla-header" onclick="toggleTLA('o7')">
+<div style="display:flex;align-items:flex-start;flex:1">
+<span class="tla-id" style="color:#4ae68a">O7</span>
+<div>
+<span class="tla-title">"5 Signs Your SDR Function Is Set Up to Fail" — <span class="tag t-carousel">CAROUSEL</span></span>
+<div class="tla-meta"><span class="badge b-green">C2</span> &nbsp;Week 3 &nbsp;|&nbsp; 6 slides</div>
+</div>
+</div>
+<button class="toggle-btn" id="btn-o7">Expand ▼</button>
+</div>
+<div class="tla-body" id="body-o7">
+<div class="linkedin-mock"><strong>SLIDE 1 (Cover):</strong>
+5 Signs Your SDR Function Is Set Up to Fail
+
+<strong>SLIDE 2:</strong>
+1. They work from home
+Junior salespeople need energy, competition, and peer learning. A bedroom desk doesn't give them that. Our data shows the physical environment is the single biggest predictor of SDR retention.
+
+<strong>SLIDE 3:</strong>
+2. No playbook
+"Get on the phones" is not a strategy. Without a defined ICP, messaging framework, and objection-handling guide, you're hoping talent can overcome a total lack of process.
+
+<strong>SLIDE 4:</strong>
+3. Onboarding = "here's Salesforce"
+A CRM login is not onboarding. The first 90 days should have weekly milestones. Week 1-2 product knowledge. Week 3-4 ICP mapping. Week 5-8 live calling with coaching. Week 9-12 independent with support.
+
+<strong>SLIDE 5:</strong>
+4. Closers are doing prospecting
+When your senior salespeople split their time between closing and pipeline building, neither gets done well. Pipeline needs its own person, its own tools, its own process.
+
+<strong>SLIDE 6:</strong>
+5. Coaching is monthly
+"How was your quarter?" is a performance review, not coaching. Junior salespeople need daily feedback on individual calls, not quarterly metrics.</div>
+<div class="linkedin-mock" style="margin-top:8px"><strong>Post caption:</strong>
+I've seen hundreds of B2B companies make these same five mistakes with their SDR function. Every single one is fixable. But most companies don't know what "good" looks like because they've never actually seen it.
+
+Which of these hits closest to home?</div>
+<div class="tla-evidence">
+<strong>Source:</strong> 90-day programme: 34.3% effectiveness. Physical HQ: 50.0% effectiveness. All 4 Disco Booked calls featured companies missing 3+ of these elements.
+</div>
+</div>
+</div>
+
+<!-- O8 -->
+<div class="tla-card" style="border-left:4px solid #4ae68a">
+<div class="tla-header" onclick="toggleTLA('o8')">
+<div style="display:flex;align-items:flex-start;flex:1">
+<span class="tla-id" style="color:#4ae68a">O8</span>
+<div>
+<span class="tla-title">"Recruiter Finds a Person. We Build a Machine." — <span class="tag t-text">TEXT</span></span>
+<div class="tla-meta"><span class="badge b-green">C2</span> <span class="badge b-orange">C3</span> &nbsp;Week 3</div>
+</div>
+</div>
+<button class="toggle-btn" id="btn-o8">Expand ▼</button>
+</div>
+<div class="tla-body" id="body-o8">
+<div class="linkedin-mock">A recruiter finds you a person. Their job is done.
+
+What happens next, the onboarding, the training, whether the person actually works out, that's all your problem.
+
+Think about a different approach.
+
+What if the person was your employee from day one, but they trained in a purpose-built environment for 90 days before sitting at your desk?
+
+What if they sat alongside experienced sales leadership 5 days a week, hearing live calls, getting coached in real-time, learning your ICP and your market by actually doing the work instead of reading a handbook?
+
+What if at the end of 90 days, you got a trained, producing team member and the systems they've been using? The playbook, the sequences, the tools, the reporting.
+
+The person is yours. The knowledge is your IP. The systems stay.
+
+That's not a recruitment outcome. That's infrastructure.
+
+A recruiter gives you a CV and an invoice.
+This gives you a trained rep, a playbook, a tech stack, and pipeline.
+
+The question isn't "do you need a salesperson?" Most companies do.
+
+The question is: "What are you hiring them into?"</div>
+<div class="tla-evidence">
+<strong>Source:</strong> 12.1% of C&S calls had recruitment confusion → 67.3% DQ when confused. This post pre-empts that confusion BEFORE the cold call. Conor's framing (zero confusion in 114 calls) proves approach matters more than denial.
+</div>
+</div>
+</div>
+
+<!-- O9 -->
+<div class="tla-card" style="border-left:4px solid #4ae68a">
+<div class="tla-header" onclick="toggleTLA('o9')">
+<div style="display:flex;align-items:flex-start;flex:1">
+<span class="tla-id" style="color:#4ae68a">O9</span>
+<div>
+<span class="tla-title">"'Not the Right Time' — Most Expensive 3 Words" — <span class="tag t-text">TEXT</span></span>
+<div class="tla-meta"><span class="badge b-green">C2</span> &nbsp;Week 4</div>
+</div>
+</div>
+<button class="toggle-btn" id="btn-o9">Expand ▼</button>
+</div>
+<div class="tla-body" id="body-o9">
+<div class="linkedin-mock">"Not the right time."
+
+I hear this on cold calls more than any other response. 122 times in our last 1,401 conversations, to be exact.
+
+And I get it. Nobody wants to add something to their plate when they're already stretched.
+
+But most people don't do the maths.
+
+If you want a salesperson producing in Q3, you need them onboarded by the end of Q2. A proper onboarding takes 90 days minimum. Which means the hiring conversation needs to start now. Not Q3. Not "after the next funding round." Not "when things settle down."
+
+Every month you delay is a month your closers spend prospecting instead of closing. A month your pipeline depends on referrals and inbound. A month your competitors are building what you're putting off.
+
+The companies that grow fastest don't wait until they need pipeline. They build it before they need it.
+
+The right time was 3 months ago.
+
+The second-best time is today.</div>
+<div class="tla-evidence">
+<strong>Source:</strong> "Not now": 122 C&S instances, 51.6% effective when rebutted. The 90-day reframe converted Enders Analysis from "call me in a year" → Disco Booked. Cat C: 32 timing-based leads in nurture.
+</div>
+</div>
+</div>
+
+<div class="tla-section-break">— Theme 3: GTM Engineering & Efficiency (Supports Campaigns 3 + 4) —</div>
+
+<!-- O10 -->
+<div class="tla-card" style="border-left:4px solid #ffaa5b">
+<div class="tla-header" onclick="toggleTLA('o10')">
+<div style="display:flex;align-items:flex-start;flex:1">
+<span class="tla-id" style="color:#ffaa5b">O10</span>
+<div>
+<span class="tla-title">"One Person + Clay + Intent Data = 3x Pipeline" — <span class="tag t-text">TEXT</span></span>
+<div class="tla-meta"><span class="badge b-blue">C1</span> <span class="badge b-orange">C3</span> <span class="badge b-purple">C4</span> &nbsp;Week 4</div>
+</div>
+</div>
+<button class="toggle-btn" id="btn-o10">Expand ▼</button>
+</div>
+<div class="tla-body" id="body-o10">
+<div class="linkedin-mock">Stop hiring 5 SDRs and hoping they figure it out.
+
+The companies seeing the best results right now are doing something different. They're hiring one person and equipping them with modern tools. Clay for building targeted prospect lists from real signals instead of bought databases. Intent data so you know when to reach out, not just who. AI for personalisation at scale that goes way beyond "Hi {First Name}" templates. And a CRM that actually tracks what matters.
+
+One person with this setup can generate the same pipeline as 3-4 traditional SDRs.
+
+I know because we train people to do exactly this. Every day, in our London office.
+
+We call it GTM engineering. It's a fundamentally different approach to building pipeline. Instead of more people, more dials, and hoping for meetings, you get better targeting, right timing, relevant messaging, and qualified conversations.
+
+The cost of one GTM Associate with modern tools is a fraction of hiring 3-4 SDRs. And they produce more.
+
+If you're still throwing bodies at the pipeline problem, there's a better way.</div>
+<div class="tla-evidence">
+<strong>Source:</strong> GTM pitch: 61.4% effectiveness (highest of any pitch element). Neverbland CEO: paying £40k/yr for consultant, wants GTM in-house. Alphaletz CEO: "interested in GTM only." Universal across C1, C3, C4.
+</div>
+</div>
+</div>
+
+<!-- O11 -->
+<div class="tla-card" style="border-left:4px solid #ffaa5b">
+<div class="tla-header" onclick="toggleTLA('o11')">
+<div style="display:flex;align-items:flex-start;flex:1">
+<span class="tla-id" style="color:#ffaa5b">O11</span>
+<div>
+<span class="tla-title">"Old Way vs New Way" — <span class="tag t-carousel">CAROUSEL</span></span>
+<div class="tla-meta"><span class="badge b-orange">C3</span> <span class="badge b-purple">C4</span> &nbsp;Week 5 &nbsp;|&nbsp; 5 slides</div>
+</div>
+</div>
+<button class="toggle-btn" id="btn-o11">Expand ▼</button>
+</div>
+<div class="tla-body" id="body-o11">
+<div class="linkedin-mock"><strong>SLIDE 1 (Cover):</strong>
+Old Way vs New Way:
+Building a B2B Sales Function in 2026
+
+<strong>SLIDE 2:</strong>
+OLD WAY: Hire 5 SDRs
+Buy a database of 50,000 contacts. Load it into a dialler. "Smile and dial" 200 calls a day. Hope someone picks up. Hope they're the right person. Hope they have a need right now.
+
+<strong>SLIDE 3:</strong>
+NEW WAY: Hire 1 GTM Associate
+Use Clay to build a list of 500 companies showing buying signals right now. Personalise outreach to each company's specific situation. Multi-channel (email + LinkedIn + phone) timed to when they're most likely to engage. Every touchpoint tracked and optimised.
+
+<strong>SLIDE 4:</strong>
+THE COST COMPARISON
+Old Way: 5 SDRs x £30k = £150k/year + manager + tools + office
+New Way: 1 GTM Associate x £30k = £30k/year + Clay + intent data
+Pipeline output: comparable. Cost: 80% less.
+
+<strong>SLIDE 5:</strong>
+The companies that win in 2026 aren't hiring more salespeople.
+They're making the ones they have dramatically more effective.
+
+That's GTM engineering.</div>
+<div class="linkedin-mock" style="margin-top:8px"><strong>Post caption:</strong>
+This is the shift I'm seeing in every conversation with B2B founders and sales leaders right now.
+
+The old playbook of more bodies, more dials, more noise just isn't working anymore. The new playbook of fewer people, better tools, and smarter targeting is producing 3x the results at a fraction of the cost.
+
+Which way is your company doing it?</div>
+<div class="tla-evidence">
+<strong>Source:</strong> GTM: 211.5s avg conversation when mentioned. Claimer CEO: "email mid Q2 with subject GTM." CROs convert at 12.0% — this data-driven framing is what they respond to.
+</div>
+</div>
+</div>
+
+<!-- O12 -->
+<div class="tla-card" style="border-left:4px solid #ffaa5b">
+<div class="tla-header" onclick="toggleTLA('o12')">
+<div style="display:flex;align-items:flex-start;flex:1">
+<span class="tla-id" style="color:#ffaa5b">O12</span>
+<div>
+<span class="tla-title">"What is GTM Engineering?" — <span class="tag t-article">ARTICLE</span></span>
+<div class="tla-meta"><span class="badge b-blue">C1</span> <span class="badge b-orange">C3</span> <span class="badge b-purple">C4</span> &nbsp;Week 5 &nbsp;|&nbsp; Long-form LinkedIn article</div>
+</div>
+</div>
+<button class="toggle-btn" id="btn-o12">Expand ▼</button>
+</div>
+<div class="tla-body" id="body-o12">
+<div class="linkedin-mock"><strong>Title:</strong> What is GTM Engineering? (And Why Every B2B Startup Should Care)
+
+<strong>Article body:</strong>
+
+I've been having the same conversation with B2B founders for the last 12 months. It goes something like this:
+
+"We need to hire salespeople."
+"What if you didn't?"
+
+That usually gets a pause. Then a follow-up: "What do you mean?"
+
+Let me explain.
+
+<strong>The Traditional Model</strong>
+
+Hire SDRs. Give them a phone and a bought database. Tell them to make 200 calls a day. Hope that volume compensates for the lack of precision.
+
+This model worked in 2015. In 2026, it's a waste of money. Prospects are drowning in cold outreach. Generic emails get deleted. Untargeted calls get hung up on.
+
+<strong>The GTM Engineering Model</strong>
+
+Instead of throwing people at the problem, you throw infrastructure at it.
+
+One person, a GTM Associate, equipped with the right tools. Clay for building prospect lists from real signals like funding rounds, job postings, tech stack changes, and leadership hires. Intent data so you know when a company is likely to buy, not just who they are. AI for personalisation at scale, and I mean outreach that actually references the prospect's situation, not templates. Plus multi-channel sequencing across email, LinkedIn, and phone, all timed and tracked.
+
+The result is one person generating 50-100 qualified conversations per month. Not cold leads. Conversations with people who match your ICP and are showing buying signals right now.
+
+<strong>Why It Works</strong>
+
+We found this in our own data. Over 8 weeks, we had 1,401 cold-call conversations with B2B companies.
+
+When we pitched "GTM engineering," using modern tools to build pipeline, the conversation converted 61% of the time. When we pitched "we help you hire salespeople," same company, same service, it converted 23%.
+
+Same product. Different framing. Nearly 3x the result.
+
+The lesson is simple: prospects don't want more people. They want more efficiency.
+
+<strong>What It Costs</strong>
+
+A GTM Associate costs roughly the same as one SDR, around £25-35k base. The tools (Clay, intent data, automation) add £500-1,000/month.
+
+Total: one person + tools = roughly £40-50k/year all-in.
+
+Compare that to 3-4 SDRs at £30k each = £90-120k/year, plus a manager, plus office space, plus churn costs.
+
+The maths isn't close.
+
+<strong>Who It's For</strong>
+
+If you're a founder doing sales yourself, this is your first hire. If you're a Sales Director with closers doing prospecting, this is how you add pipeline capacity without adding headcount. If you're a CRO looking at efficiency, this is the lever.
+
+GTM engineering isn't a buzzword. It's the way the best B2B companies are building pipeline in 2026.</div>
+<div class="tla-evidence">
+<strong>Source:</strong> GTM pitch: 61.4% effectiveness — the single most effective pitch element in the entire C&S dataset. Educates the market on the concept while positioning TSP as the authority. Serves all 4 campaigns.
+</div>
+</div>
+</div>
+
+<!-- O13 -->
+<div class="tla-card" style="border-left:4px solid #ffaa5b">
+<div class="tla-header" onclick="toggleTLA('o13')">
+<div style="display:flex;align-items:flex-start;flex:1">
+<span class="tla-id" style="color:#ffaa5b">O13</span>
+<div>
+<span class="tla-title">"Pipeline Is an Infrastructure Problem" — <span class="tag t-text">TEXT</span></span>
+<div class="tla-meta"><span class="badge b-green">C2</span> <span class="badge b-orange">C3</span> &nbsp;Week 5</div>
+</div>
+</div>
+<button class="toggle-btn" id="btn-o13">Expand ▼</button>
+</div>
+<div class="tla-body" id="body-o13">
+<div class="linkedin-mock">Pipeline isn't a sales problem. It's an infrastructure problem.
+
+When a company tells me "we need more pipeline," my first question is always: "Who owns it?"
+
+Usually the answer is: "Our sales team."
+
+That's the problem.
+
+Pipeline, the act of finding, qualifying, and booking meetings with the right prospects, is a distinct function. It requires different skills, different tools, and different metrics than closing deals.
+
+When your closers own pipeline and closing at the same time, they cherry-pick the easy leads and ignore the hard ones. They prospect when they have no deals to close and stop when they do. Pipeline becomes feast or famine. Never predictable.
+
+The fix isn't "motivate them to prospect more." The fix is separating the functions. One person or team whose only job is building pipeline. A different person or team whose only job is closing deals. Each measured differently. Each with their own tools. Each doing what they're best at.
+
+This isn't a luxury for big companies. This is how every B2B company north of £1M revenue should be thinking about their sales function.
+
+Pipeline is infrastructure. Build it like infrastructure.</div>
+<div class="tla-evidence">
+<strong>Source:</strong> C4B = #1 volume segment (1,596 companies). The core C4B pain: closers burdened with prospecting. "Do it in-house" rebuttal: 44.3% effective when reframed as "additive, not replacement."
+</div>
+</div>
+</div>
+
+<div class="tla-section-break">— Theme 4: Credibility, Social Proof & Data (Supports All Campaigns) —</div>
+
+<!-- O14 -->
+<div class="tla-card" style="border-left:4px solid #b07aff">
+<div class="tla-header" onclick="toggleTLA('o14')">
+<div style="display:flex;align-items:flex-start;flex:1">
+<span class="tla-id" style="color:#b07aff">O14</span>
+<div>
+<span class="tla-title">"WorldFirst: 1 → 250 → £750M Exit" — <span class="tag t-text">TEXT</span></span>
+<div class="tla-meta"><span class="badge b-blue">C1</span> <span class="badge b-green">C2</span> <span class="badge b-orange">C3</span> &nbsp;Week 6</div>
+</div>
+</div>
+<button class="toggle-btn" id="btn-o14">Expand ▼</button>
+</div>
+<div class="tla-body" id="body-o14">
+<div class="linkedin-mock">I was the first SDR at a company called WorldFirst.
+
+When I started, I was literally the only salesperson. By the time the company sold for £750 million, we had 250.
+
+If I did it again, there's one thing I'd change. I'd build the infrastructure before hiring the people.
+
+We got lucky at WorldFirst. The market was growing fast enough that even mediocre hires could produce. But for every 10 salespeople who joined, 3-4 churned within a year. The ones who succeeded weren't necessarily the most talented. They were the ones who happened to sit next to someone senior who coached them.
+
+That's what I took away. Not that you need great people, although you do. But that the environment matters more than the individual.
+
+A good person in a bad environment underperforms.
+An average person in a great environment outperforms.
+
+That's why we built a physical office. That's why we run a 90-day programme. That's why our team sits with juniors 5 days a week.
+
+It's not because we love offices. It's because the data is overwhelming: environment is the #1 predictor of sales performance for junior talent.
+
+When someone asks me what I learned scaling from 1 to 250, it's this. Build the system first. The people will thrive inside it.</div>
+<div class="tla-evidence">
+<strong>Source:</strong> WorldFirst story: 93.3% effective when Angus deploys as a closer. Converted Enders Analysis from "call me in a year" → Disco Booked in one sentence. Environment pitch: 50.0% effectiveness, 334.7s avg talk time.
+</div>
+</div>
+</div>
+
+<!-- O15 -->
+<div class="tla-card" style="border-left:4px solid #b07aff">
+<div class="tla-header" onclick="toggleTLA('o15')">
+<div style="display:flex;align-items:flex-start;flex:1">
+<span class="tla-id" style="color:#b07aff">O15</span>
+<div>
+<span class="tla-title">"Client Case Study — Founder-Led to £15M Raise" — <span class="tag t-carousel">CAROUSEL</span></span>
+<div class="tla-meta"><span class="badge b-blue">C1</span> <span class="badge b-green">C2</span> <span class="badge b-orange">C3</span> &nbsp;Week 6 &nbsp;|&nbsp; 5 slides &nbsp;|&nbsp; <span style="color:#ff6a6a">Needs client data verification with Sully</span></div>
+</div>
+</div>
+<button class="toggle-btn" id="btn-o15">Expand ▼</button>
+</div>
+<div class="tla-body" id="body-o15">
+<div class="linkedin-mock"><strong>SLIDE 1 (Cover):</strong>
+From Founder-Led Sales to £15M Raise
+A Case Study
+
+<strong>SLIDE 2:</strong>
+THE PROBLEM
+[Client] was a [X]-person startup. The founder was doing all the sales. Revenue was growing, but only because the founder was on every call. They couldn't scale without building a proper sales function.
+
+<strong>SLIDE 3:</strong>
+WHAT WE DID
+Hired and onboarded [X] SDRs through our 90-day programme. Built the ICP, messaging framework, and outbound playbook. Set up the tools stack (Clay, CRM, sequencing). Coached the team daily in our London office.
+
+<strong>SLIDE 4:</strong>
+THE RESULT
+[X] qualified meetings booked per month. [X]% conversion rate from meeting to deal. Revenue grew from [£X] to [£X] in [X] months. Successfully raised £15M from [Investor].
+
+<strong>SLIDE 5:</strong>
+THE LESSON
+The founder didn't need to become a better salesperson.
+They needed to stop being the salesperson.
+
+[VERIFY ALL FIGURES WITH SULLY BEFORE POSTING]</div>
+<div class="tla-evidence">
+<strong>Note:</strong> Placeholder data — exact figures need verification with Sully. This is the #1 ask from engaged C&S leads: "I want to see something first." Completing this case study is critical for MOFU conversion.
+</div>
+</div>
+</div>
+
+<!-- O16 -->
+<div class="tla-card" style="border-left:4px solid #b07aff">
+<div class="tla-header" onclick="toggleTLA('o16')">
+<div style="display:flex;align-items:flex-start;flex:1">
+<span class="tla-id" style="color:#b07aff">O16</span>
+<div>
+<span class="tla-title">"Why I Built a Physical Sales Floor" — <span class="tag t-text">TEXT</span></span>
+<div class="tla-meta"><span class="badge b-green">C2</span> <span class="badge b-orange">C3</span> &nbsp;Week 7</div>
+</div>
+</div>
+<button class="toggle-btn" id="btn-o16">Expand ▼</button>
+</div>
+<div class="tla-body" id="body-o16">
+<div class="linkedin-mock">In 2024, I built a physical sales floor in London.
+
+Everyone thought I was mad. "Nobody wants to commute anymore." "Remote is the future." "Sales can be done from anywhere."
+
+They're right that sales can be done from anywhere. But junior sales? Can't.
+
+Across hundreds of hires, remote junior salespeople have 3x the churn rate of in-office juniors. Not because they're lazy. Because they're learning, and learning happens through osmosis.
+
+A junior sitting on a sales floor hears 50 pitches a day that aren't theirs. They hear how a senior rep handles a tough objection. They hear a gong ring when someone books a meeting and feel the energy. They ask the person next to them: "How did you get past that?"
+
+A junior working from home hears their own calls. In silence. With nobody to ask.
+
+One of our prospects, a CEO, called me and said: "I hear what you're saying and I think we can do better." Then he asked if he could seat more of his team in our office alongside ours.
+
+That's when I knew the model was right.
+
+If you're hiring junior salespeople into a remote environment, you're not saving money. You're spending more. You just won't see the invoice until month 4 when they resign.</div>
+<div class="tla-evidence">
+<strong>Source:</strong> Environment pitch: 50.0% effectiveness, 334.7s avg talk time — longest of any pitch element. Robert Schrimpff (Solar for Schools): "asked about seating more of his team here with us." Contrarian angle drives engagement.
+</div>
+</div>
+</div>
+
+<!-- O17 -->
+<div class="tla-card" style="border-left:4px solid #b07aff">
+<div class="tla-header" onclick="toggleTLA('o17')">
+<div style="display:flex;align-items:flex-start;flex:1">
+<span class="tla-id" style="color:#b07aff">O17</span>
+<div>
+<span class="tla-title">"1,401 Conversations: 4 Things That Book Meetings" — <span class="tag t-text">TEXT</span></span>
+<div class="tla-meta"><span class="badge b-green">C2</span> <span class="badge b-orange">C3</span> &nbsp;Week 7</div>
+</div>
+</div>
+<button class="toggle-btn" id="btn-o17">Expand ▼</button>
+</div>
+<div class="tla-body" id="body-o17">
+<div class="linkedin-mock">We analysed 1,401 cold-call conversations over 8 weeks.
+
+4 meetings booked. 37 "interested" prospects. 131 "send me an email" responses.
+
+When we looked at what those 4 booked meetings had in common, and what separated them from the 131 who said "send me an email," it came down to four things.
+
+<strong>1. The prospect had an active, articulated pain point.</strong>
+Not "maybe we should think about sales." Something specific: "My junior hire just left." "I'm spending 60% of my time selling instead of building."
+
+<strong>2. The agent adapted to the situation.</strong>
+They didn't run a script. They listened to the specific problem and changed their pitch mid-conversation. The booked meetings were all conversations, not monologues.
+
+<strong>3. The agent asked for the meeting with a specific date and time.</strong>
+"What about Thursday at 2?" Not "I'll send you some info." Every single booking had a specific time proposed.
+
+<strong>4. The call ran 5-10 minutes.</strong>
+Long enough to build rapport. Short enough to leave things to discuss. Under 3 minutes is too short to build trust. Over 12 minutes and everything gets said on the call, so the meeting adds nothing.
+
+The biggest conversion leak? Accepting "send me an email" without pushing back. Our data shows 76.9% of those responses are actually buying signals. They're engaged, they just need a nudge.
+
+The fix: "I'd be rubbish at my job if I just did that. Can you give me 30 seconds on what stood out to you?"
+
+That one line changed everything for us.</div>
+<div class="tla-evidence">
+<strong>Source:</strong> 10,024 dial attempts, 1,401 conversations, 4 Disco Booked. All 4 share these patterns. "Send me an email" rebuttal: 76.9% effective. Alex's Pureprint booking: "I'd be rubbish at my job if I just did that" → immediate meeting agreement.
+</div>
+</div>
+</div>
+
+<div class="tla-section-break">— Theme 5: Objection Pre-Handling (Supports Campaigns 2 + 3) —</div>
+
+<!-- O18 -->
+<div class="tla-card" style="border-left:4px solid #999">
+<div class="tla-header" onclick="toggleTLA('o18')">
+<div style="display:flex;align-items:flex-start;flex:1">
+<span class="tla-id" style="color:#999">O18</span>
+<div>
+<span class="tla-title">"'We Already Have That Covered'" — <span class="tag t-text">TEXT</span></span>
+<div class="tla-meta"><span class="badge b-orange">C3</span> &nbsp;Week 7</div>
+</div>
+</div>
+<button class="toggle-btn" id="btn-o18">Expand ▼</button>
+</div>
+<div class="tla-body" id="body-o18">
+<div class="linkedin-mock">"We already have that covered."
+
+I've heard this 308 times on cold calls in the last 8 weeks.
+
+And in about a third of those cases, when I asked one follow-up question, "Is the team hitting the numbers you need?", the answer was some version of: "Well... not exactly."
+
+"Covered" usually means one of three things.
+
+It means "we have salespeople" but they're doing both prospecting and closing, and neither is getting done well. Or it means "we tried it before" but the hire churned or the agency didn't deliver, so they stopped and went back to founder-led. Or it means "someone else handles that" but that someone is the founder, and they're maxed out.
+
+"Covered" doesn't mean "optimised." It means "we've addressed it in some way and moved on."
+
+The companies that are actually covered, with a dedicated pipeline function, structured onboarding, and a producing outbound team, don't say "we already have that covered." They say: "We're sorted, but tell me about the GTM engineering side."
+
+Next time you hear "we're covered," from a prospect or from yourself, ask: "Is it working as well as it could?"
+
+The honest answer is usually no.</div>
+<div class="tla-evidence">
+<strong>Source:</strong> "Already have it covered": 308 instances in C&S data, 33.8% effective when rebutted. Talisman Tech CEO (745s): initially abrasive, said "covered" — Angus pivoted to GTM engineering and unlocked the conversation.
+</div>
+</div>
+</div>
+
+<!-- O19 -->
+<div class="tla-card" style="border-left:4px solid #999">
+<div class="tla-header" onclick="toggleTLA('o19')">
+<div style="display:flex;align-items:flex-start;flex:1">
+<span class="tla-id" style="color:#999">O19</span>
+<div>
+<span class="tla-title">"'We Do It In-House.' Good." — <span class="tag t-text">TEXT</span></span>
+<div class="tla-meta"><span class="badge b-green">C2</span> <span class="badge b-orange">C3</span> &nbsp;Week 8</div>
+</div>
+</div>
+<button class="toggle-btn" id="btn-o19">Expand ▼</button>
+</div>
+<div class="tla-body" id="body-o19">
+<div class="linkedin-mock">"We do it in-house."
+
+Good. You should.
+
+This is the most misunderstood objection in B2B sales. When a prospect says "we do it in-house," most salespeople hear "we don't need you" and they move on.
+
+But "we do it in-house" usually means the senior team is handling prospecting and closing and managing and everything else all at once. That's not a strength. That's a bottleneck.
+
+The question isn't whether you should do it in-house. Of course you should. The question is whether you've actually separated the functions.
+
+Does prospecting have its own dedicated person? Does that person have the right tools? Are they being coached daily, not monthly? Is pipeline production predictable, or does it depend entirely on how busy your closers are?
+
+If the answer to any of those is no, then "doing it in-house" is costing you more than you think.
+
+We're not here to replace your team. We're here to add the layer you're missing.
+
+The companies we work with all do it in-house. That's the point. We help them do it better.</div>
+<div class="tla-evidence">
+<strong>Source:</strong> "Do it in-house": 131 C&S instances, 44.3% effective when reframed as additive. The GTM pivot ("we're not replacing, we're adding efficiency") works because it respects their existing investment.
+</div>
+</div>
+</div>
+
+<!-- O20 -->
+<div class="tla-card" style="border-left:4px solid #999">
+<div class="tla-header" onclick="toggleTLA('o20')">
+<div style="display:flex;align-items:flex-start;flex:1">
+<span class="tla-id" style="color:#999">O20</span>
+<div>
+<span class="tla-title">"Biggest Challenge with Junior Sales Hires?" — <span class="tag t-poll">POLL</span></span>
+<div class="tla-meta"><span class="badge b-green">C2</span> &nbsp;Week 8</div>
+</div>
+</div>
+<button class="toggle-btn" id="btn-o20">Expand ▼</button>
+</div>
+<div class="tla-body" id="body-o20">
+<div class="linkedin-mock"><strong>Poll question:</strong>
+What's your biggest challenge with junior sales hires?
+
+<strong>Options:</strong>
+(a) Finding good candidates
+(b) Onboarding them properly
+(c) Retaining them past 6 months
+(d) Getting them productive fast enough
+
+<strong>Post caption:</strong>
+I've spent the last year talking to hundreds of B2B companies about this exact question.
+
+The answers are rarely "finding people." Everyone can post a job ad. The real challenge is what happens after the hire.
+
+Most companies lose junior salespeople within 6 months. Not because the people are wrong, but because the onboarding, environment, and coaching aren't set up for success.
+
+Which one is your biggest challenge?
+
+(Spoiler: the data says it's almost always (b) and (c). And honestly, they're the same problem.)</div>
+<div class="tla-evidence">
+<strong>Source:</strong> Maps to Cat A (53 leads with hire-failure pain) and Cat G (6 SDR/hiring interest leads). Polls drive 2-3x engagement. Results validate which content to amplify next.
+</div>
+</div>
+</div>
+
+<!-- Posting Schedule -->
+<div style="background:#111118;border:1px solid #222;border-radius:12px;padding:20px;margin-top:24px">
+<div style="font-size:15px;font-weight:700;color:#fff;margin-bottom:12px">Suggested 8-Week Posting Schedule</div>
+<table>
+<tr><th>Week</th><th>Posts</th><th>Theme</th></tr>
+<tr><td>1</td><td><strong>O1</strong> (text) + <strong>O2</strong> (carousel)</td><td style="color:#5b9aff">Founder Pain</td></tr>
+<tr><td>2</td><td><strong>O3</strong> (text) + <strong>O4</strong> (text) + <strong>O5</strong> (poll)</td><td style="color:#5b9aff">Founder Pain + First Hire</td></tr>
+<tr><td>3</td><td><strong>O6</strong> (text) + <strong>O7</strong> (carousel) + <strong>O8</strong> (text)</td><td style="color:#4ae68a">Team Performance + Differentiation</td></tr>
+<tr><td>4</td><td><strong>O9</strong> (text) + <strong>O10</strong> (text)</td><td style="color:#4ae68a">Timing + <span style="color:#ffaa5b">GTM Engineering</span></td></tr>
+<tr><td>5</td><td><strong>O11</strong> (carousel) + <strong>O12</strong> (article) + <strong>O13</strong> (text)</td><td style="color:#ffaa5b">GTM Engineering Deep Dive</td></tr>
+<tr><td>6</td><td><strong>O14</strong> (text) + <strong>O15</strong> (carousel)</td><td style="color:#b07aff">Credibility + Case Study</td></tr>
+<tr><td>7</td><td><strong>O16</strong> (text) + <strong>O17</strong> (text) + <strong>O18</strong> (text)</td><td style="color:#b07aff">Social Proof + <span style="color:#999">Objection Handling</span></td></tr>
+<tr><td>8</td><td><strong>O19</strong> (text) + <strong>O20</strong> (poll)</td><td style="color:#999">Objection Handling</td></tr>
+</table>
+<p style="color:#666;font-size:11px;margin-top:10px"><strong>Note:</strong> This schedule runs alongside the paid TLAs. The organic posts reinforce the same messaging — a prospect might see a TLA in their feed (paid) AND one of these organic posts (via Sully's network). The combination builds familiarity faster than either alone.</p>
+</div>
+
+</div>
+</details>
+
+<!-- ========================================== -->
+<!-- VIDEO SCRIPTS & CASE STUDY STRATEGY -->
+<!-- ========================================== -->
+<details class="section-dropdown" style="margin-top:40px;border-top:2px solid #333;padding-top:0">
+<summary style="padding-top:32px">🎬 Video Scripts — Detailed Production Briefs</summary>
+<div class="dropdown-content">
+<div class="section-desc">1 filming session with Sully → 3 edited variants (one per audience tier). Plus case study/testimonial video strategy with existing and pipeline clients.</div>
+
+<div class="note">
+<strong>Format:</strong> 15 seconds max. Selfie/talking-head style. Authentic > polished. Phone camera is fine — no studio needed.<br>
+<strong>Why 15 sec:</strong> LinkedIn data shows under-15s videos have the highest completion rates (35-45%) and the lowest CPM ($38.94 vs $13.23 for image ads).<br>
+<strong>Filming setup:</strong> TSP office in London — the sales floor visible behind Sully. This IS the differentiator. Showing it > describing it.<br>
+<strong>What NOT to do:</strong> No corporate intro sequence. No logo animation. No background music over voice. No "hi I'm Alex from The Sales People" — just talk like you're telling a mate.
+</div>
+
+<!-- V1 -->
+<div class="tla-card" style="border-left:4px solid #5b9aff">
+<div class="tla-header" onclick="toggleTLA('v1')">
+<div style="display:flex;align-items:flex-start;flex:1">
+<span class="tla-id" style="color:#5b9aff">V1</span>
+<div>
+<span class="tla-title">Founder Script — "Stuck Doing Sales Yourself"</span>
+<div class="tla-meta"><span class="badge b-blue">C1</span> &nbsp;Campaign 1: Build From Zero — 720 cos &nbsp;|&nbsp; 15 sec</div>
+</div>
+</div>
+<button class="toggle-btn" id="btn-v1">Expand ▼</button>
+</div>
+<div class="tla-body" id="body-v1">
+
+<div class="subsection-title">📝 Full Script (word-for-word)</div>
+<div class="linkedin-mock" style="font-size:14px;line-height:2">"Most founders I meet are stuck doing two jobs. Running the company and running sales.
+
+Their first hire didn't work out. Their pipeline depends on them. They know it's not sustainable.
+
+That's exactly what we fix."</div>
+
+<div class="subsection-title" style="margin-top:16px">🎥 Production Brief</div>
+<table>
+<tr><th style="width:150px">Element</th><th>Detail</th></tr>
+<tr><td><strong>Duration</strong></td><td>12-15 seconds</td></tr>
+<tr><td><strong>Setting</strong></td><td>TSP office — Sully sitting at his desk or standing in the sales floor area. Activity visible behind him (people on phones, whiteboards). <strong>Do NOT use a blank wall</strong> — the environment IS the message.</td></tr>
+<tr><td><strong>Camera</strong></td><td>Phone, front-facing, held slightly above eye level. Portrait mode (9:16 for LinkedIn feed). Sully holds it himself or props it — no tripod feel.</td></tr>
+<tr><td><strong>Lighting</strong></td><td>Natural office light. No ring light. Authentic.</td></tr>
+<tr><td><strong>Sully's delivery</strong></td><td>Direct to camera. Conversational, not scripted-sounding. Slight lean-in on "That's exactly what we fix" — this is the hook. Slight pause after "not sustainable" before the payoff line.</td></tr>
+<tr><td><strong>On-screen text</strong></td><td>Captions/subtitles burned in (80% of LinkedIn video is watched on mute). White text, black semi-transparent background bar.</td></tr>
+<tr><td><strong>CTA</strong></td><td>No verbal CTA. Post copy below the video does the work: "If this sounds like you — I've been here. DM me or check the link in my bio."</td></tr>
+<tr><td><strong>Tone reference</strong></td><td>Like the first 30 seconds of the Pureprint call — Alex setting up the problem casually before anyone asks him to sell: "I'm the founder of The Sales People... we help companies build out sales functions."</td></tr>
+</table>
+
+<div class="subsection-title" style="margin-top:16px">❌ What NOT to Say / Do</div>
+<table>
+<tr><th>Don't</th><th>Why</th></tr>
+<tr><td>"Hi, I'm Alex Sullivan, founder of The Sales People"</td><td>Corporate opening kills watch time. Jump straight into the insight. LinkedIn profile shows who he is.</td></tr>
+<tr><td>"We offer..." / "Our services include..."</td><td>This is a TLA, not a sales pitch. The value IS the insight. The sell is implicit.</td></tr>
+<tr><td>"DM me" / "Book a call" / any verbal CTA</td><td>Makes it feel like an ad (it is, but shouldn't feel like one). Post copy handles CTA.</td></tr>
+<tr><td>Mention "recruitment" or "recruiter"</td><td>67.3% DQ when recruitment mentioned. Don't introduce the association — even to deny it.</td></tr>
+<tr><td>Smile throughout / be upbeat</td><td>The message is about a real problem. Sully should be direct and slightly serious — then shift to confident on the payoff. Authenticity > energy.</td></tr>
+</table>
+
+<div class="tla-evidence">
+<strong>Why this script works (C&S evidence):</strong>
+<div class="data-row"><span class="data-tag">C3 (founder-doing-sales): 16.5% engagement — highest of any segment</span><span class="data-tag">57 CEO+C3 combos in target list</span><span class="data-tag">Happy Chimps: "good at strategies but need execution"</span><span class="data-tag">CASCO Pet: "spending silly amounts of time not selling"</span><span class="data-tag">Alex's 30-sec check-in technique: 54.6% deep engagement conversion</span></div>
+</div>
+</div>
+</div>
+
+<!-- V2 -->
+<div class="tla-card" style="border-left:4px solid #4ae68a">
+<div class="tla-header" onclick="toggleTLA('v2')">
+<div style="display:flex;align-items:flex-start;flex:1">
+<span class="tla-id" style="color:#4ae68a">V2</span>
+<div>
+<span class="tla-title">Sales Director Script — "Closers Doing Prospecting"</span>
+<div class="tla-meta"><span class="badge b-green">C2</span> &nbsp;Campaign 2: Add Outbound — 786 cos &nbsp;|&nbsp; 15 sec</div>
+</div>
+</div>
+<button class="toggle-btn" id="btn-v2">Expand ▼</button>
+</div>
+<div class="tla-body" id="body-v2">
+
+<div class="subsection-title">📝 Full Script (word-for-word)</div>
+<div class="linkedin-mock" style="font-size:14px;line-height:2">"Most Sales Directors I work with have the same problem.
+
+Their closers are stuck prospecting, their junior hires keep churning, and their pipeline is completely unpredictable.
+
+The fix isn't hiring more people. It's building the right infrastructure around them."</div>
+
+<div class="subsection-title" style="margin-top:16px">🎥 Production Brief</div>
+<table>
+<tr><th style="width:150px">Element</th><th>Detail</th></tr>
+<tr><td><strong>Duration</strong></td><td>13-15 seconds</td></tr>
+<tr><td><strong>Setting</strong></td><td>Same office, but Sully standing now — ideally with the sales floor behind him, people visible on calls. Creates contrast: "this is what a working sales environment looks like."</td></tr>
+<tr><td><strong>Camera</strong></td><td>Same phone setup. Slightly wider frame to show more of the office.</td></tr>
+<tr><td><strong>Sully's delivery</strong></td><td>Peer-to-peer energy — talking to a Sales Director, not selling to them. Slight head nod on "same problem" (recognition). The three pain points are listed rhythmically — closers, juniors, pipeline — like ticking off boxes they'll relate to. Confident shift on "the fix isn't hiring more people."</td></tr>
+<tr><td><strong>On-screen text</strong></td><td>Subtitles burned in. Optionally: brief stat flash at the end — "From 1,401 real conversations" — adds credibility.</td></tr>
+<tr><td><strong>CTA</strong></td><td>Post copy: "We've spent the last year building infrastructure for B2B sales teams. If your closers are still doing prospecting — that's the problem we solve."</td></tr>
+</table>
+
+<div class="subsection-title" style="margin-top:16px">❌ What NOT to Say / Do</div>
+<table>
+<tr><th>Don't</th><th>Why</th></tr>
+<tr><td>"We train SDRs" / "We provide sales hires"</td><td>Sounds like a recruitment pitch. Lead with the problem, not the solution mechanism.</td></tr>
+<tr><td>"In just 90 days..."</td><td>Sounds like an infomercial. Save the 90-day detail for text posts and follow-up conversations.</td></tr>
+<tr><td>Talk about price or cost</td><td>Never quote pricing in awareness content. All 4 Disco Booked calls succeeded without discussing price.</td></tr>
+</table>
+
+<div class="tla-evidence">
+<strong>Why this script works:</strong>
+<div class="data-row"><span class="data-tag">C4B: 4.1% positive — 3 of 4 Disco Booked from this segment</span><span class="data-tag">Karma Kitchen HoS: "loved the idea, wanted to hire SDR and grow"</span><span class="data-tag">Pureprint SD: "does not have proper demand gen"</span><span class="data-tag">"Do it in-house" rebuttal: 44.3% effective</span><span class="data-tag">400 Sales Dir + C4B combos in OLD list alone</span></div>
+</div>
+</div>
+</div>
+
+<!-- V3 -->
+<div class="tla-card" style="border-left:4px solid #ffaa5b">
+<div class="tla-header" onclick="toggleTLA('v3')">
+<div style="display:flex;align-items:flex-start;flex:1">
+<span class="tla-id" style="color:#ffaa5b">V3</span>
+<div>
+<span class="tla-title">GTM Efficiency Script — "Talent Without Infrastructure"</span>
+<div class="tla-meta"><span class="badge b-orange">C3</span> <span class="badge b-purple">C4</span> &nbsp;Campaigns 3 + 4 — Larger / mature companies &nbsp;|&nbsp; 15 sec</div>
+</div>
+</div>
+<button class="toggle-btn" id="btn-v3">Expand ▼</button>
+</div>
+<div class="tla-body" id="body-v3">
+
+<div class="subsection-title">📝 Full Script (word-for-word)</div>
+<div class="linkedin-mock" style="font-size:14px;line-height:2">"Your sales team has the talent. What they don't have is the infrastructure.
+
+One GTM Associate with modern tools can generate the same pipeline as three or four traditional SDRs.
+
+We found that in our own data from over fourteen hundred real conversations. Framing matters."</div>
+
+<div class="subsection-title" style="margin-top:16px">🎥 Production Brief</div>
+<table>
+<tr><th style="width:150px">Element</th><th>Detail</th></tr>
+<tr><td><strong>Duration</strong></td><td>14-15 seconds</td></tr>
+<tr><td><strong>Setting</strong></td><td>Sully at a desk or whiteboard. Optional: quick shot of a Clay dashboard or data screen behind him — signals data-driven approach.</td></tr>
+<tr><td><strong>Camera</strong></td><td>Slightly tighter frame than V1/V2 — more intimate, like sharing a finding.</td></tr>
+<tr><td><strong>Sully's delivery</strong></td><td>This is the "data person" version of Sully. Calmer, more measured. The emphasis is on "we found that in our own data" — it's a discovery, not a sales pitch. Slight eyebrow raise on "three or four" — let the number land. End with "framing matters" as a mic-drop.</td></tr>
+<tr><td><strong>On-screen text</strong></td><td>Subtitles + optional stat overlay: "61.4% vs 22.8%" appearing briefly as he says "framing matters."</td></tr>
+<tr><td><strong>CTA</strong></td><td>Post copy: "We analysed 10,024 dial attempts and 1,401 conversations. The way you frame your sales function to prospects changes everything. Full findings in my last post [link to T8]."</td></tr>
+</table>
+
+<div class="subsection-title" style="margin-top:16px">❌ What NOT to Say / Do</div>
+<table>
+<tr><th>Don't</th><th>Why</th></tr>
+<tr><td>"We help companies build sales teams"</td><td>This is the 22.8% framing — the one that doesn't work. Lead with infrastructure and efficiency.</td></tr>
+<tr><td>Name specific tools (Clay, etc.) in the video</td><td>Too technical for a 15-sec video. Save tool names for text posts and articles.</td></tr>
+<tr><td>Rush through the data point</td><td>The "fourteen hundred real conversations" line is the credibility anchor. Let it breathe.</td></tr>
+</table>
+
+<div class="tla-evidence">
+<strong>Why this script works:</strong>
+<div class="data-row"><span class="data-tag">GTM pitch: 61.4% vs HQ pitch: 22.8%</span><span class="data-tag">GTM conversations avg 211.5s (3.5 min)</span><span class="data-tag">CROs convert at 12.0% — data-driven audience</span><span class="data-tag">Proprietary data no competitor can claim</span><span class="data-tag">Teaches while selling — highest engagement pattern</span></div>
+</div>
+</div>
+</div>
+
+<!-- FILMING LOGISTICS -->
+<div style="background:#111118;border:1px solid #222;border-radius:12px;padding:20px;margin-top:20px">
+<div style="font-size:15px;font-weight:700;color:#fff;margin-bottom:12px">🎥 Filming Logistics — One Session, Three Videos</div>
+<table>
+<tr><th style="width:150px">Item</th><th>Detail</th></tr>
+<tr><td><strong>Total filming time</strong></td><td>30-45 minutes (5-6 takes per script × 3 scripts)</td></tr>
+<tr><td><strong>Location</strong></td><td>TSP London office — sales floor area</td></tr>
+<tr><td><strong>Equipment</strong></td><td>iPhone (or any phone with good camera). No professional equipment needed.</td></tr>
+<tr><td><strong>Wardrobe</strong></td><td>Whatever Sully normally wears. Smart casual. No suit jacket (too corporate). Same outfit for all 3 — edited to look like different days via background/angle change.</td></tr>
+<tr><td><strong>Audio</strong></td><td>Quiet-ish room. Built-in phone mic is fine for 15 sec. If office is loud: use AirPods Pro mic clipped to collar.</td></tr>
+<tr><td><strong>Editing</strong></td><td>Trim best take. Burn in subtitles (CapCut or similar — free). Add 1-sec fade in/out. No transitions. No music. No logo sting.</td></tr>
+<tr><td><strong>Output format</strong></td><td>MP4, portrait (9:16), 1080×1920. Upload natively to LinkedIn (not as a link).</td></tr>
+<tr><td><strong>Posting order</strong></td><td>V2 first (most universal — Sales Directors are largest audience), then V1 (founders), then V3 (GTM/efficiency).</td></tr>
+</table>
+
+</div>
+</details>
+
+<!-- ========================================== -->
+<!-- CASE STUDY / TESTIMONIAL VIDEO STRATEGY -->
+<!-- ========================================== -->
+<details class="section-dropdown" style="margin-top:16px">
+<summary>🏆 Case Study & Testimonial Video Strategy <span style="color:#777;font-size:13px;font-weight:400;margin-left:6px">(needs further thinking — not for immediate execution)</span></summary>
+<div class="dropdown-content">
+<div class="section-desc">Client videos where customers speak about the impact TSP has had. These are the highest-trust content assets — a prospect watching a peer describe their experience is 10x more persuasive than Sully talking about himself.</div>
+
+<div class="note">
+<strong>Two types:</strong><br>
+1. <strong>Testimonial clips (30-60 sec)</strong> — Client founder/Sales Director talks about one specific outcome. Used as standalone LinkedIn posts + embedded in ad campaigns.<br>
+2. <strong>Full case study videos (2-3 min)</strong> — Deeper story: problem → what TSP did → results → what's next. Used on website, in MOFU email sequences, and shared via Sully's profile.
+</div>
+
+<!-- CANDIDATE CLIENTS -->
+<details class="sub-dropdown">
+<summary>🎯 Candidate Clients for Testimonial Videos (6 clients assessed)</summary>
+<div class="dropdown-content">
+
+<table>
+<tr><th style="width:30px">#</th><th style="width:140px">Client</th><th style="width:120px">Contact</th><th>Why They're a Good Fit</th><th style="width:80px">Ask Risk</th><th>Campaign Fit</th></tr>
+
+<tr>
+<td><strong>CS1</strong></td>
+<td><strong>TradeKart</strong><br><span style="color:#666;font-size:10px">tradekart.com</span></td>
+<td>Alistair McAuley (Founder & CEO)</td>
+<td>
+<strong>The "founder-to-function" story.</strong> Went from founder doing sales → TSP placed Juwon (SDR) on 2 March → now has active outbound function.<br>
+<strong>Specific proof:</strong> Niamh described it as "from top to bottom was just what it needs to be — way ahead of where we were."<br>
+<strong>Angle for video:</strong> "I was doing all the sales myself. TSP built me a function in weeks, not months."
+</td>
+<td style="color:#4ae68a">Low</td>
+<td><span class="badge b-blue">C1</span> Perfect for founders</td>
+</tr>
+
+<tr>
+<td><strong>CS2</strong></td>
+<td><strong>Today Digital</strong><br><span style="color:#666;font-size:10px">todaydigital.com</span></td>
+<td>Chris Porter (Commercial Director)</td>
+<td>
+<strong>The "scale + GTM" story.</strong> Multiple reps placed (Michael = 3 bookings in 2 days on C&S dialler). GTM + Clay training delivered by Vion. ConnectAndSell referral secured.<br>
+<strong>Specific proof:</strong> Michael's 3 bookings in 2 days is a concrete, quotable result.<br>
+<strong>Angle for video:</strong> "TSP didn't just give us people. They gave us the tools and training to make them productive from week one."
+</td>
+<td style="color:#ffaa5b">Medium</td>
+<td><span class="badge b-green">C2</span> <span class="badge b-orange">C3</span> Team scaling story</td>
+</tr>
+
+<tr>
+<td><strong>CS3</strong></td>
+<td><strong>Adoptech</strong><br><span style="color:#666;font-size:10px">adoptech.co.uk</span></td>
+<td>Ronan Dudhia (GTM Lead)</td>
+<td>
+<strong>The "GTM engineering" story.</strong> Full hypothesis testing framework built. GTM + sales rep structure with AI-driven transcript analysis and coaching.<br>
+<strong>Specific proof:</strong> 12 hypotheses across 3 tiers tested. Client happy with team and deliverables (confirmed 2 March).<br>
+<strong>Angle for video:</strong> "TSP helped us build a data-driven GTM machine — not just hire a salesperson."
+</td>
+<td style="color:#ff6a6a">Higher</td>
+<td><span class="badge b-orange">C3</span> <span class="badge b-purple">C4</span> GTM engineering proof</td>
+</tr>
+
+<tr>
+<td><strong>CS4</strong></td>
+<td><strong>Salesape</strong><br><span style="color:#666;font-size:10px">[referenced in all marketing]</span></td>
+<td>[Founder — name TBC with Sully]</td>
+<td>
+<strong>The flagship case study.</strong> Referenced in ALL outbound email copy: "From founder-led to £15M raise from Northzone."<br>
+<strong>Specific proof:</strong> £15M Northzone raise. Exact figures need verification with Sully.<br>
+<strong>Angle for video:</strong> "When I first met Sully, I was doing all the sales myself. Eighteen months later, we raised £15M."
+</td>
+<td style="color:#ffaa5b">Medium</td>
+<td><span class="badge b-blue">C1</span> The #1 story for founders</td>
+</tr>
+
+<tr>
+<td><strong>CS5</strong></td>
+<td><strong>Felk</strong><br><span style="color:#666;font-size:10px">felk.ai</span></td>
+<td>Uditha Atukorala (Cofounder)</td>
+<td>
+<strong>The "early-stage + GTM + tools" story.</strong> Very early startup. Combined GTM + sales rep role. LinkedIn Ads via Tom Tigwell. Dialler on Connect and Sell.<br>
+<strong>Angle for video:</strong> "As a pre-revenue startup, we couldn't afford to get our sales function wrong. TSP gave us the infrastructure."
+</td>
+<td style="color:#ff6a6a">Higher</td>
+<td><span class="badge b-blue">C1</span> <span class="badge b-purple">C4</span> Early-stage GTM</td>
+</tr>
+
+<tr>
+<td><strong>CS6</strong></td>
+<td><strong>Worldwide</strong><br><span style="color:#666;font-size:10px">[pipeline — near close]</span></td>
+<td>[TBC]</td>
+<td>
+<strong>The "scale" story.</strong> 3-4 SDRs + 1 GTM — the largest single placement. If this closes, it's the proof that TSP can handle volume.<br>
+<strong>Angle for video:</strong> "We needed to build an outbound team of 5 from scratch. TSP had them producing within 90 days."
+</td>
+<td style="color:#888">Too early — pipeline</td>
+<td><span class="badge b-green">C2</span> <span class="badge b-orange">C3</span> Scale proof</td>
+</tr>
+</table>
+</div>
+</details>
+
+<!-- TESTIMONIAL VIDEO SCRIPTS -->
+<details class="sub-dropdown">
+<summary>📝 Testimonial Video Templates — 5 question frameworks (30-60 sec each)</summary>
+<div class="dropdown-content">
+<div class="section-desc">Give these prompts to the client. Let them answer naturally — don't script their words. Film on their phone or on a Zoom recording. Edit to 30-60 seconds.</div>
+
+<table>
+<tr><th style="width:30px">#</th><th style="width:180px">Template Name</th><th>Questions to Ask the Client</th><th style="width:120px">Best Client For</th><th>Campaign Fit</th></tr>
+
+<tr>
+<td><strong>TM1</strong></td>
+<td><strong>"The Before & After"</strong><br><span style="color:#666;font-size:10px">30-45 sec</span></td>
+<td>
+1. "What was your sales setup like before you started working with TSP?"<br>
+2. "What's different now?"<br>
+3. "What's the one thing that surprised you most?"
+</td>
+<td>TradeKart (CS1)<br>Salesape (CS4)</td>
+<td><span class="badge b-blue">C1</span> <span class="badge b-green">C2</span></td>
+</tr>
+
+<tr>
+<td><strong>TM2</strong></td>
+<td><strong>"The First 90 Days"</strong><br><span style="color:#666;font-size:10px">30-45 sec</span></td>
+<td>
+1. "What were the first 90 days like with the person TSP placed?"<br>
+2. "How quickly did they start contributing?"<br>
+3. "What would have happened if you'd done this hire yourself?"
+</td>
+<td>Today Digital (CS2)<br>TradeKart (CS1)</td>
+<td><span class="badge b-green">C2</span></td>
+</tr>
+
+<tr>
+<td><strong>TM3</strong></td>
+<td><strong>"Not What I Expected"</strong><br><span style="color:#666;font-size:10px">30-45 sec</span></td>
+<td>
+1. "When you first heard about TSP, what did you think we did?"<br>
+2. "What was actually different from what you expected?"<br>
+3. "How would you describe it to another founder?"
+</td>
+<td>Anyone — this addresses the recruitment confusion directly</td>
+<td><span class="badge b-green">C2</span> <span class="badge b-orange">C3</span></td>
+</tr>
+
+<tr>
+<td><strong>TM4</strong></td>
+<td><strong>"The GTM Engineering Difference"</strong><br><span style="color:#666;font-size:10px">45-60 sec</span></td>
+<td>
+1. "What was your outbound setup before the GTM work?"<br>
+2. "What tools or processes did TSP introduce?"<br>
+3. "What result did you see from the GTM approach vs traditional outbound?"
+</td>
+<td>Adoptech (CS3)<br>Today Digital (CS2)</td>
+<td><span class="badge b-orange">C3</span> <span class="badge b-purple">C4</span></td>
+</tr>
+
+<tr>
+<td><strong>TM5</strong></td>
+<td><strong>"Would You Do It Again?"</strong><br><span style="color:#666;font-size:10px">15-30 sec — short, punchy</span></td>
+<td>
+1. "Knowing what you know now, would you work with TSP again?"<br>
+2. "What would you tell a founder who's on the fence?"
+</td>
+<td>Strongest relationship — TradeKart, Salesape</td>
+<td><span class="badge b-blue">C1</span> <span class="badge b-green">C2</span> <span class="badge b-orange">C3</span></td>
+</tr>
+</table>
+</div>
+</details>
+
+<!-- HOW TO USE TESTIMONIALS -->
+<details class="sub-dropdown">
+<summary>📍 Where Each Testimonial Type Gets Used (channel matrix)</summary>
+<div class="dropdown-content">
+<table>
+<tr><th>Testimonial</th><th>LinkedIn Organic</th><th>LinkedIn Ads</th><th>MOFU Email</th><th>Website</th></tr>
+<tr><td><strong>TM1</strong> Before & After</td><td>✅ Sully reposts with commentary</td><td>✅ Can run as TLA from client's profile (needs their permission)</td><td>✅ Email 3 in Cat A sequence (case study)</td><td>✅ Homepage testimonial</td></tr>
+<tr><td><strong>TM2</strong> First 90 Days</td><td>✅ Great standalone post</td><td>❌ Too specific for cold audience</td><td>✅ Email 2 in Cat G (SDR/hiring interest)</td><td>✅ "How it works" page</td></tr>
+<tr><td><strong>TM3</strong> Not What I Expected</td><td>✅ Addresses recruiter confusion</td><td>✅ Powerful as ad — prospect explains TSP better than TSP can</td><td>✅ Any sequence — universal</td><td>✅ FAQ section</td></tr>
+<tr><td><strong>TM4</strong> GTM Difference</td><td>✅ Data/tech audience loves this</td><td>✅ Run in Campaigns 3 + 4</td><td>✅ Cat B (GTM Interest) email 2</td><td>✅ GTM engineering page</td></tr>
+<tr><td><strong>TM5</strong> Would You Again</td><td>✅ Short-form — high engagement</td><td>✅ Universal — works in any campaign</td><td>✅ Final email in any sequence (closer)</td><td>✅ Trust bar / social proof strip</td></tr>
+</table>
+</div>
+</details>
+
+<!-- RECOMMENDED ACTION -->
+<details class="sub-dropdown">
+<summary>✅ Recommended Action — Start With These 2</summary>
+<div class="dropdown-content">
+<div style="background:rgba(74,230,138,0.05);border:1px solid rgba(74,230,138,0.15);border-radius:8px;padding:16px">
+<table>
+<tr><th>Priority</th><th>Client</th><th>Template</th><th>Why First</th></tr>
+<tr><td style="color:#4ae68a">1st</td><td><strong>TradeKart</strong> — Alistair McAuley</td><td>TM1 (Before & After) + TM5 (Would You Again)</td><td>Lowest ask risk. Active client. Strong relationship. Juwon placed successfully. The "founder-to-function" story maps directly to Campaign 1's audience (720 founder-led companies).</td></tr>
+<tr><td style="color:#4ae68a">2nd</td><td><strong>Salesape</strong> — [confirm with Sully]</td><td>TM1 (Before & After)</td><td>The flagship story referenced in ALL outbound copy. £15M raise from Northzone. If only one case study video gets made, it should be this one. But needs Sully to confirm the relationship is strong enough to ask.</td></tr>
+</table>
+<p style="color:#888;font-size:11px;margin-top:8px"><strong>Note:</strong> Adoptech (CS3) is at renewal risk (week 9 of engagement, Al no-showed). Not the right time to ask for a testimonial. Revisit after renewal. Today Digital (CS2) has client management issues (Chris is bottleneck). Wait until Michael's early performance data solidifies — then Chris would have something concrete to talk about.</p>
+</div>
+</div>
+</details>
+
+
+</div>
+</details>
+
+<script>
+function toggleTLA(id){
+  var body = document.getElementById('body-'+id);
+  var btn = document.getElementById('btn-'+id);
+  if(body.classList.contains('open')){
+    body.classList.remove('open');
+    btn.textContent = 'Expand ▼';
+  } else {
+    body.classList.add('open');
+    btn.textContent = 'Collapse ▲';
+  }
+}
+
+function toggle(n){
+  const body = document.getElementById('body'+n);
+  const btn = document.getElementById('btn'+n);
+  if(body.classList.contains('open')){
+    body.classList.remove('open');
+    btn.textContent = 'Expand ▼';
+  } else {
+    body.classList.add('open');
+    btn.textContent = 'Collapse ▲';
+  }
+}
+// Auto-expand campaign 1
+toggle(1);
+</script>
+
+</body>
+</html>
