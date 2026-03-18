@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TSP Unified Funnel Architecture — TOFU/MOFU/BOFU + C&S Categories + Tech Stack</title>
+<style>
+  :root {
+    --bg: #0f172a;
+    --surface: #1e293b;
+    --surface2: #334155;
+    --border: #475569;
+    --text: #e2e8f0;
+    --text-dim: #94a3b8;
+    --text-bright: #f8fafc;
+    --clay: #7C3AED;
+    --linkedin: #0A66C2;
+    --instantly: #EA580C;
+    --cas: #DC2626;
+    --hubspot: #FF7A59;
+    --workflow: #F59E0B;
+    --nurture-a: #059669;
+    --nurture-b: #0891B2;
+    --nurture-c: #6366F1;
+    --nurture-d: #78716C;
+    --nurture-e: #D946EF;
+    --nurture-f: #64748B;
+    --nurture-g: #F97316;
+    --bofu: #DC2626;
+    --slack: #4A154B;
+    --webflow: #146EF5;
+    --arrow: #64748b;
+    --tofu-bg: rgba(234, 88, 12, 0.08);
+    --mofu-bg: rgba(5, 150, 105, 0.08);
+    --bofu-bg: rgba(220, 38, 38, 0.08);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    padding: 24px;
+    line-height: 1.5;
+  }
+
+  h1 {
+    font-size: 22px;
+    color: var(--text-bright);
+    margin-bottom: 4px;
+    font-weight: 700;
+  }
+
+  .subtitle {
+    color: var(--text-dim);
+    font-size: 13px;
+    margin-bottom: 24px;
+  }
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 20px;
+    padding: 12px 16px;
+    background: var(--surface);
+    border-radius: 8px;
+    border: 1px solid var(--border);
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--text-dim);
+  }
+
+  .legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+
+  /* Phase sections */
+  .phase {
+    margin-bottom: 20px;
+    border-radius: 12px;
+    padding: 16px 20px;
+    border: 1px solid var(--border);
+  }
+
+  .phase-tofu { background: var(--tofu-bg); border-color: rgba(234, 88, 12, 0.3); }
+  .phase-mofu { background: var(--mofu-bg); border-color: rgba(5, 150, 105, 0.3); }
+  .phase-bofu { background: var(--bofu-bg); border-color: rgba(220, 38, 38, 0.3); }
+
+  .phase-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .phase-tag {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    padding: 3px 10px;
+    border-radius: 4px;
+    text-transform: uppercase;
+  }
+
+  .tag-tofu { background: var(--instantly); color: #fff; }
+  .tag-mofu { background: var(--nurture-a); color: #fff; }
+  .tag-bofu { background: var(--bofu); color: #fff; }
+  .tag-clay { background: var(--clay); color: #fff; }
+
+  .phase-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-bright);
+  }
+
+  /* Tool cards */
+  .tools-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+  }
+
+  .tool-card {
+    flex: 1;
+    min-width: 180px;
+    max-width: 280px;
+    border-radius: 8px;
+    padding: 12px 14px;
+    border: 1px solid;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+    position: relative;
+  }
+
+  .tool-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  }
+
+  .tool-card h3 {
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .tool-card ul {
+    list-style: none;
+    font-size: 11px;
+    color: var(--text-dim);
+  }
+
+  .tool-card ul li {
+    padding: 1px 0;
+  }
+
+  .tool-card ul li::before {
+    content: "• ";
+    color: var(--text-dim);
+  }
+
+  .tc-clay { background: rgba(124, 58, 237, 0.15); border-color: rgba(124, 58, 237, 0.4); }
+  .tc-clay h3 { color: #A78BFA; }
+  .tc-linkedin { background: rgba(10, 102, 194, 0.15); border-color: rgba(10, 102, 194, 0.4); }
+  .tc-linkedin h3 { color: #60A5FA; }
+  .tc-instantly { background: rgba(234, 88, 12, 0.15); border-color: rgba(234, 88, 12, 0.4); }
+  .tc-instantly h3 { color: #FB923C; }
+  .tc-cas { background: rgba(220, 38, 38, 0.15); border-color: rgba(220, 38, 38, 0.4); }
+  .tc-cas h3 { color: #FCA5A5; }
+  .tc-hubspot { background: rgba(255, 122, 89, 0.15); border-color: rgba(255, 122, 89, 0.4); }
+  .tc-hubspot h3 { color: #FF9F7A; }
+  .tc-slack { background: rgba(74, 21, 75, 0.15); border-color: rgba(74, 21, 75, 0.4); }
+  .tc-slack h3 { color: #C084FC; }
+  .tc-webflow { background: rgba(20, 110, 245, 0.15); border-color: rgba(20, 110, 245, 0.4); }
+  .tc-webflow h3 { color: #93C5FD; }
+
+  /* Flow arrows between sections */
+  .flow-connector {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 0;
+    position: relative;
+  }
+
+  .flow-arrow {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+  }
+
+  .flow-arrow .arrow-line {
+    width: 2px;
+    height: 16px;
+    background: var(--arrow);
+  }
+
+  .flow-arrow .arrow-head {
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 8px solid var(--arrow);
+  }
+
+  .flow-labels {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .flow-label {
+    font-size: 10px;
+    color: var(--text-dim);
+    background: var(--surface);
+    padding: 3px 8px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    white-space: nowrap;
+  }
+
+  .flow-label strong { color: var(--text); }
+
+  /* Category cards for MOFU */
+  .categories-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 10px;
+  }
+
+  .cat-card {
+    border-radius: 8px;
+    padding: 10px 12px;
+    border: 1px solid;
+    position: relative;
+    cursor: pointer;
+    transition: transform 0.15s;
+  }
+
+  .cat-card:hover { transform: translateY(-1px); }
+
+  .cat-card .cat-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
+  }
+
+  .cat-card .cat-name {
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .cat-card .cat-count {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 1px 6px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.1);
+  }
+
+  .cat-card .cat-desc {
+    font-size: 10px;
+    color: var(--text-dim);
+    margin-bottom: 4px;
+  }
+
+  .cat-card .cat-mapping {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 3px;
+    display: inline-block;
+    margin-top: 2px;
+  }
+
+  .cat-card .cat-cadence {
+    font-size: 10px;
+    color: var(--text-dim);
+    margin-top: 4px;
+    font-style: italic;
+  }
+
+  .cc-a { background: rgba(5, 150, 105, 0.12); border-color: rgba(5, 150, 105, 0.4); }
+  .cc-a .cat-name { color: #6EE7B7; }
+  .cc-a .cat-mapping { background: rgba(5, 150, 105, 0.3); color: #6EE7B7; }
+
+  .cc-b { background: rgba(8, 145, 178, 0.12); border-color: rgba(8, 145, 178, 0.4); }
+  .cc-b .cat-name { color: #67E8F9; }
+  .cc-b .cat-mapping { background: rgba(8, 145, 178, 0.3); color: #67E8F9; }
+
+  .cc-c { background: rgba(99, 102, 241, 0.12); border-color: rgba(99, 102, 241, 0.4); }
+  .cc-c .cat-name { color: #A5B4FC; }
+  .cc-c .cat-mapping { background: rgba(99, 102, 241, 0.3); color: #A5B4FC; }
+
+  .cc-d { background: rgba(120, 113, 108, 0.12); border-color: rgba(120, 113, 108, 0.4); }
+  .cc-d .cat-name { color: #D6D3D1; }
+  .cc-d .cat-mapping { background: rgba(120, 113, 108, 0.3); color: #D6D3D1; }
+
+  .cc-e { background: rgba(217, 70, 239, 0.12); border-color: rgba(217, 70, 239, 0.4); }
+  .cc-e .cat-name { color: #E879F9; }
+  .cc-e .cat-mapping { background: rgba(217, 70, 239, 0.3); color: #E879F9; }
+
+  .cc-f { background: rgba(100, 116, 139, 0.12); border-color: rgba(100, 116, 139, 0.4); }
+  .cc-f .cat-name { color: #CBD5E1; }
+  .cc-f .cat-mapping { background: rgba(100, 116, 139, 0.3); color: #CBD5E1; }
+
+  .cc-g { background: rgba(249, 115, 22, 0.12); border-color: rgba(249, 115, 22, 0.4); }
+  .cc-g .cat-name { color: #FDBA74; }
+  .cc-g .cat-mapping { background: rgba(249, 115, 22, 0.3); color: #FDBA74; }
+
+  /* Data flows section */
+  .data-flows {
+    background: var(--surface);
+    border-radius: 12px;
+    padding: 16px 20px;
+    border: 1px solid var(--border);
+    margin-bottom: 20px;
+  }
+
+  .data-flows h2 {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-bright);
+    margin-bottom: 12px;
+  }
+
+  .flow-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
+  }
+
+  .flow-table th {
+    text-align: left;
+    padding: 6px 10px;
+    background: var(--surface2);
+    color: var(--text-dim);
+    font-weight: 600;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .flow-table td {
+    padding: 6px 10px;
+    border-bottom: 1px solid rgba(71, 85, 105, 0.3);
+    vertical-align: top;
+  }
+
+  .flow-table tr:hover td {
+    background: rgba(255,255,255,0.02);
+  }
+
+  .flow-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--text);
+    flex-shrink: 0;
+  }
+
+  .status-badge {
+    font-size: 9px;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 3px;
+    display: inline-block;
+  }
+
+  .status-live { background: rgba(5, 150, 105, 0.3); color: #6EE7B7; }
+  .status-blocked { background: rgba(220, 38, 38, 0.3); color: #FCA5A5; }
+  .status-planned { background: rgba(245, 158, 11, 0.3); color: #FCD34D; }
+  .status-future { background: rgba(100, 116, 139, 0.3); color: #CBD5E1; }
+
+  /* Bridging logic */
+  .bridging {
+    background: var(--surface);
+    border-radius: 12px;
+    padding: 16px 20px;
+    border: 1px solid var(--border);
+    margin-bottom: 20px;
+  }
+
+  .bridging h2 {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-bright);
+    margin-bottom: 12px;
+  }
+
+  .bridge-flow {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    overflow-x: auto;
+    padding-bottom: 8px;
+  }
+
+  .bridge-step {
+    flex: 1;
+    min-width: 140px;
+    padding: 10px 12px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    position: relative;
+    text-align: center;
+  }
+
+  .bridge-step:first-child { border-radius: 8px 0 0 8px; }
+  .bridge-step:last-child { border-radius: 0 8px 8px 0; }
+
+  .bridge-step h4 {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-bright);
+    margin-bottom: 4px;
+  }
+
+  .bridge-step p {
+    font-size: 10px;
+    color: var(--text-dim);
+  }
+
+  .bridge-arrow {
+    display: flex;
+    align-items: center;
+    padding: 0 2px;
+    color: var(--arrow);
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+
+  /* Blockers */
+  .blockers {
+    background: rgba(220, 38, 38, 0.08);
+    border: 1px solid rgba(220, 38, 38, 0.3);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+  }
+
+  .blockers h2 {
+    font-size: 15px;
+    font-weight: 700;
+    color: #FCA5A5;
+    margin-bottom: 10px;
+  }
+
+  .blocker-item {
+    display: flex;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(220, 38, 38, 0.15);
+    font-size: 12px;
+    align-items: flex-start;
+  }
+
+  .blocker-item:last-child { border-bottom: none; }
+
+  .blocker-icon {
+    flex-shrink: 0;
+    font-size: 14px;
+  }
+
+  .blocker-text strong { color: var(--text-bright); }
+
+  /* Collapsible details */
+  details {
+    margin-top: 8px;
+  }
+
+  details summary {
+    cursor: pointer;
+    font-size: 11px;
+    color: var(--text-dim);
+    font-weight: 600;
+    padding: 4px 0;
+  }
+
+  details summary:hover { color: var(--text); }
+
+  details[open] summary { margin-bottom: 8px; }
+
+  .detail-content {
+    font-size: 11px;
+    color: var(--text-dim);
+    padding-left: 12px;
+    border-left: 2px solid var(--border);
+  }
+
+  .timestamp {
+    font-size: 10px;
+    color: var(--text-dim);
+    text-align: right;
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+  }
+</style>
+</head>
+<body>
+
+<h1>TSP Unified Funnel Architecture</h1>
+<p class="subtitle">TOFU Tests + C&S 7-Category MOFU + BOFU Signals &mdash; Tech tool integration map &mdash; 10 Mar 2026</p>
+
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background: var(--clay)"></div>Clay (Command Centre)</div>
+  <div class="legend-item"><div class="legend-dot" style="background: var(--linkedin)"></div>LinkedIn Campaign Mgr</div>
+  <div class="legend-item"><div class="legend-dot" style="background: var(--instantly)"></div>Instantly / Smartlead</div>
+  <div class="legend-item"><div class="legend-dot" style="background: var(--cas)"></div>Connect & Sell</div>
+  <div class="legend-item"><div class="legend-dot" style="background: var(--hubspot)"></div>HubSpot CRM (Enterprise)</div>
+  <div class="legend-item"><div class="legend-dot" style="background: var(--workflow)"></div>HubSpot Workflows</div>
+  <div class="legend-item"><div class="legend-dot" style="background: var(--slack)"></div>Slack</div>
+  <div class="legend-item"><div class="legend-dot" style="background: var(--webflow)"></div>Webflow</div>
+</div>
+
+<!-- ═══════════ CLAY COMMAND CENTRE ═══════════ -->
+<div class="phase" style="background: rgba(124, 58, 237, 0.06); border-color: rgba(124, 58, 237, 0.3);">
+  <div class="phase-header">
+    <span class="phase-tag tag-clay">Command Centre</span>
+    <span class="phase-title">Clay &mdash; Data Enrichment, List Building & Intent Signals</span>
+  </div>
+  <div class="tools-row">
+    <div class="tool-card tc-clay">
+      <h3>Clay Workbooks</h3>
+      <ul>
+        <li>List building from Crunchbase (via Boomerang)</li>
+        <li>Data enrichment (email, phone, LinkedIn URL, company data)</li>
+        <li>ICP scoring engine (tool-agnostic)</li>
+        <li>Audience segmentation &mdash; 3 persona variants</li>
+      </ul>
+    </div>
+    <div class="tool-card tc-clay">
+      <h3>Clay Signal Monitor</h3>
+      <ul>
+        <li>Intent signal tracking (more reliable than HubSpot)</li>
+        <li>Funding rounds, hiring, leadership changes</li>
+        <li>Competitor activity, re-engagement</li>
+        <li>Feeds BOFU alerts via webhook</li>
+      </ul>
+    </div>
+    <div class="tool-card tc-clay">
+      <h3>Clay Outputs (5 feeds)</h3>
+      <ul>
+        <li><strong>&rarr; LinkedIn CM:</strong> CSV matched audience (LinkedIn URLs)</li>
+        <li><strong>&rarr; Instantly:</strong> Verified email lists</li>
+        <li><strong>&rarr; HubSpot:</strong> Enriched contacts (native integration)</li>
+        <li><strong>&rarr; Connect & Sell:</strong> Phone lists</li>
+        <li><strong>&rarr; BOFU:</strong> Intent signals (webhook)</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- Arrow -->
+<div class="flow-connector">
+  <div class="flow-arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+</div>
+
+<!-- ═══════════ TOFU ═══════════ -->
+<div class="phase phase-tofu">
+  <div class="phase-header">
+    <span class="phase-tag tag-tofu">TOFU</span>
+    <span class="phase-title">Top of Funnel &mdash; 3 Parallel Tests (3,000 contacts)</span>
+  </div>
+
+  <div class="tools-row">
+    <div class="tool-card tc-linkedin">
+      <h3>LinkedIn Campaign Mgr</h3>
+      <ul>
+        <li>Thought Leader Ads (Sully's posts) 60%</li>
+        <li>Short video &lt;15s (talking head) 30%</li>
+        <li>Image ads (stat graphics) 10%</li>
+        <li>Target: 8-10 impressions/contact</li>
+        <li>Budget: ~&pound;220-420 (Tests A+B only)</li>
+        <li>Warm-up: 2-3 weeks before outbound</li>
+      </ul>
+      <details>
+        <summary>Which tests use this?</summary>
+        <div class="detail-content">
+          <strong>Test A</strong> (1,000): Ads &rarr; Emails &rarr; Calls<br>
+          <strong>Test B</strong> (1,000): Ads &rarr; Calls &rarr; Emails (interested only)<br>
+          <strong>Test C</strong> (1,000): NO ads (live control)
+        </div>
+      </details>
+    </div>
+
+    <div class="tool-card tc-instantly">
+      <h3>Instantly / Smartlead</h3>
+      <ul>
+        <li>High-volume cold email (burner domains)</li>
+        <li>TOFU only &mdash; NOT for nurture</li>
+        <li>Test A: 4-email pre-call sequence to all 1,000</li>
+        <li>3 persona variants: Founder Pain (55%), Pipeline Gap (35%), GTM Efficiency (10%)</li>
+        <li>A/B test subject lines within each variant</li>
+      </ul>
+      <details>
+        <summary>Outputs to HubSpot</summary>
+        <div class="detail-content">
+          Reply/interested signals &rarr; HubSpot (webhook or manual)<br>
+          <span class="status-badge status-blocked">BLOCKER</span> 986 unread replies sitting unanswered
+        </div>
+      </details>
+    </div>
+
+    <div class="tool-card tc-cas">
+      <h3>Connect & Sell</h3>
+      <ul>
+        <li>Parallel dialler (~13-14% conversation rate)</li>
+        <li>SDR tags call outcomes immediately</li>
+        <li>New disposition framework (from C&S analysis):</li>
+        <li>&nbsp;&nbsp;SE-Soft Interest &rarr; Cat A</li>
+        <li>&nbsp;&nbsp;SE-GTM &rarr; Cat B</li>
+        <li>&nbsp;&nbsp;SE-Not Now &rarr; Cat C</li>
+        <li>&nbsp;&nbsp;SE-Referral &rarr; Cat E</li>
+        <li>&nbsp;&nbsp;SE-Has Solution &rarr; Cat F</li>
+        <li>&nbsp;&nbsp;Not Interested (ICP) &rarr; Cat D</li>
+      </ul>
+      <details>
+        <summary>Outputs to HubSpot</summary>
+        <div class="detail-content">
+          Call outcomes + SDR tags &rarr; HubSpot contact properties<br>
+          <code>tofu_call_outcome</code>: interested_pain_point, interested_bad_timing, interested_wrong_person, interested_gtm, interested_has_solution, not_interested, no_answer, meeting_booked<br>
+          <span class="status-badge status-blocked">BLOCKER</span> SDR tagging SOP doesn't exist yet
+        </div>
+      </details>
+    </div>
+  </div>
+</div>
+
+<!-- Arrow: TOFU to HubSpot -->
+<div class="flow-connector">
+  <div class="flow-labels">
+    <span class="flow-label"><strong>Instantly</strong> &rarr; reply signals (webhook)</span>
+    <span class="flow-label"><strong>C&S</strong> &rarr; call outcomes + SDR tags</span>
+    <span class="flow-label"><strong>Webflow</strong> &rarr; form fills + tracking (future)</span>
+  </div>
+</div>
+<div class="flow-connector">
+  <div class="flow-arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+</div>
+
+<!-- ═══════════ HUBSPOT CRM ═══════════ -->
+<div class="phase" style="background: rgba(255, 122, 89, 0.06); border-color: rgba(255, 122, 89, 0.3);">
+  <div class="phase-header">
+    <span class="phase-tag" style="background: var(--hubspot); color: #fff;">CRM</span>
+    <span class="phase-title">HubSpot CRM &mdash; Sales Hub Enterprise (Single Source of Truth)</span>
+  </div>
+  <div class="tools-row">
+    <div class="tool-card tc-hubspot">
+      <h3>Contact Management</h3>
+      <ul>
+        <li>Source of truth for all contacts</li>
+        <li><code>tofu_test_group</code>: Test A / B / C</li>
+        <li><code>tofu_call_outcome</code>: disposition tags</li>
+        <li><code>nurture_category</code>: A-G (from C&S)</li>
+        <li>Deal pipeline tracking</li>
+        <li>Meeting booking</li>
+      </ul>
+    </div>
+    <div class="tool-card tc-hubspot" style="border-color: rgba(245, 158, 11, 0.5);">
+      <h3>Workflows (Enterprise)</h3>
+      <ul>
+        <li>Trigger: contact property change</li>
+        <li>Auto-enrol in sequences by category</li>
+        <li>Route A/B/G &rarr; immediate sequences</li>
+        <li>Route C &rarr; calendar-based drip</li>
+        <li>Route D &rarr; low-frequency auto nurture</li>
+        <li>Route E &rarr; new outbound to referral</li>
+        <li>Route F &rarr; quarterly displacement</li>
+      </ul>
+      <span class="status-badge status-blocked">Needs Enterprise upgrade (+&pound;35/seat)</span>
+    </div>
+    <div class="tool-card tc-hubspot">
+      <h3>Integrations Out</h3>
+      <ul>
+        <li><strong>&rarr; Slack:</strong> MQL alerts, meeting booked</li>
+        <li><strong>&rarr; LinkedIn CM:</strong> Retargeting audiences (future)</li>
+        <li><strong>&rarr; Sequences:</strong> Auto-enrol nurture (Enterprise)</li>
+        <li>Lead scoring (basic, via Clay sync)</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- Arrow: HubSpot to MOFU -->
+<div class="flow-connector">
+  <div class="flow-labels">
+    <span class="flow-label">Property change triggers workflow &rarr; auto-enrol in category sequence</span>
+  </div>
+</div>
+<div class="flow-connector">
+  <div class="flow-arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+</div>
+
+<!-- ═══════════ MOFU ═══════════ -->
+<div class="phase phase-mofu">
+  <div class="phase-header">
+    <span class="phase-tag tag-mofu">MOFU</span>
+    <span class="phase-title">Middle of Funnel &mdash; 7 Nurture Categories (171 existing + new TOFU leads)</span>
+  </div>
+
+  <div class="categories-grid">
+    <!-- Cat A -->
+    <div class="cat-card cc-a">
+      <div class="cat-header">
+        <span class="cat-name">A: Soft Interest</span>
+        <span class="cat-count">53 leads</span>
+      </div>
+      <div class="cat-desc">Pain acknowledged, 4.7 min avg talk time. Real engagement on call.</div>
+      <div class="cat-mapping">TOFU &rarr; I1 (pain point) + MOFU warm</div>
+      <div class="cat-cadence">4 touches over 10 days: 2 emails &rarr; 1 call &rarr; 1 email (WorldFirst close)</div>
+      <details>
+        <summary>Tech flow</summary>
+        <div class="detail-content">
+          C&S tag &rarr; HubSpot property &rarr; Workflow triggers sequence &rarr; Sends from Sully's mailbox (HubSpot Sequences) &rarr; Call task created in HubSpot Day 6 &rarr; If no convert after 10d, enters MOFU extension (monthly value content)
+        </div>
+      </details>
+    </div>
+
+    <!-- Cat B -->
+    <div class="cat-card cc-b">
+      <div class="cat-header">
+        <span class="cat-name">B: GTM / Tools Interest</span>
+        <span class="cat-count">10 leads</span>
+      </div>
+      <div class="cat-desc">Engaged with GTM engineering / Clay / AI angle specifically. 5.3 min avg.</div>
+      <div class="cat-mapping">TOFU &rarr; I4 (GTM curious, new disposition)</div>
+      <div class="cat-cadence">3 emails over 14 days: GTM explainer &rarr; Free audit offer &rarr; Tool stack + meeting ask</div>
+      <details>
+        <summary>Tech flow</summary>
+        <div class="detail-content">
+          C&S tag "SE-GTM" &rarr; HubSpot property &rarr; Workflow triggers GTM sequence &rarr; HubSpot Sequences from Sully's mailbox &rarr; If no convert, enters MOFU GTM drip (monthly GTM content)
+        </div>
+      </details>
+    </div>
+
+    <!-- Cat C -->
+    <div class="cat-card cc-c">
+      <div class="cat-header">
+        <span class="cat-name">C: Not Now &mdash; Timing</span>
+        <span class="cat-count">32 leads</span>
+      </div>
+      <div class="cat-desc">Right ICP, right person, wrong time. Gave specific future windows.</div>
+      <div class="cat-mapping">TOFU &rarr; I2 (bad timing) + MOFU timing</div>
+      <div class="cat-cadence">1 "parking" email + monthly drip + hard push at stated date</div>
+      <details>
+        <summary>Tech flow</summary>
+        <div class="detail-content">
+          C&S tag "SE-Not Now" &rarr; HubSpot property + <strong>HubSpot task with due date</strong> (stated timeframe) &rarr; Monthly drip via HubSpot Sequences &rarr; At stated date: workflow triggers hard-push email + call task &rarr; If engaged, re-route to Cat A sequence
+        </div>
+      </details>
+    </div>
+
+    <!-- Cat D -->
+    <div class="cat-card cc-d">
+      <div class="cat-header">
+        <span class="cat-name">D: Polite Brush-off</span>
+        <span class="cat-count">31 leads</span>
+      </div>
+      <div class="cat-desc">64s avg talk time. "Send me an email" to end the call. No real engagement.</div>
+      <div class="cat-mapping">Low-priority automated nurture (not true MOFU)</div>
+      <div class="cat-cadence">1 email + quarterly newsletter only</div>
+      <details>
+        <summary>Tech flow</summary>
+        <div class="detail-content">
+          C&S tag &rarr; HubSpot property &rarr; Single follow-up email (manual or auto) &rarr; Added to quarterly newsletter list &rarr; <strong>If they ever engage</strong> (click, reply, visit site): HubSpot engagement score triggers re-score &rarr; move to Cat A
+        </div>
+      </details>
+    </div>
+
+    <!-- Cat E -->
+    <div class="cat-card cc-e">
+      <div class="cat-header">
+        <span class="cat-name">E: Referral / Wrong Person</span>
+        <span class="cat-count">24 leads</span>
+      </div>
+      <div class="cat-desc">Not the buyer, but pointed to someone who is. 141s avg talk time.</div>
+      <div class="cat-mapping">TOFU re-entry &rarr; new outbound to referred person</div>
+      <div class="cat-cadence">2 parallel tracks: 3 emails to referral target + 1 thank-you to original</div>
+      <details>
+        <summary>Tech flow</summary>
+        <div class="detail-content">
+          C&S tag "SE-Referral" + referral name in notes &rarr; HubSpot: create NEW contact for referral target &rarr; Referral enters warm outbound sequence (Instantly or HubSpot Sequences) with name-drop &rarr; Original contact gets thank-you email &rarr; <strong>Referral target is now a new TOFU lead</strong> &mdash; loops back into the funnel
+        </div>
+      </details>
+    </div>
+
+    <!-- Cat F -->
+    <div class="cat-card cc-f">
+      <div class="cat-header">
+        <span class="cat-name">F: Has Solution</span>
+        <span class="cat-count">15 leads</span>
+      </div>
+      <div class="cat-desc">Happy with current provider. 169s avg. Nurture long for displacement.</div>
+      <div class="cat-mapping">BOFU displacement / long-cycle quarterly</div>
+      <div class="cat-cadence">1 email + quarterly displacement case study (6-12 months)</div>
+      <details>
+        <summary>Tech flow</summary>
+        <div class="detail-content">
+          C&S tag "SE-Has Solution" &rarr; HubSpot property &rarr; Quarterly automated email via HubSpot workflow &rarr; Clay Signal Monitor watches for: provider change, new funding, leadership change &rarr; <strong>If displacement signal fires</strong>: HubSpot task created + Slack alert &rarr; sales re-engages with tailored "things changed?" message
+        </div>
+      </details>
+    </div>
+
+    <!-- Cat G -->
+    <div class="cat-card cc-g">
+      <div class="cat-header">
+        <span class="cat-name">G: SDR / Hiring Interest</span>
+        <span class="cat-count">6 leads</span>
+      </div>
+      <div class="cat-desc">Specifically engaged with hiring/training proposition. 214s avg. Ready to move.</div>
+      <div class="cat-mapping">TOFU &rarr; I1 variant (hiring-specific pain)</div>
+      <div class="cat-cadence">3 touches over 7 days: role spec &rarr; cost comparison &rarr; hard meeting ask</div>
+      <details>
+        <summary>Tech flow</summary>
+        <div class="detail-content">
+          C&S tag &rarr; HubSpot property &rarr; Workflow triggers hiring-specific sequence &rarr; HubSpot Sequences from Sully's mailbox &rarr; Fast cadence (they're ready) &rarr; If no convert after 7d, enters MOFU hiring drip (monthly)
+        </div>
+      </details>
+    </div>
+  </div>
+
+  <details style="margin-top: 14px;">
+    <summary>MOFU Extension &mdash; What happens after initial sequence doesn't convert (30-90 days)</summary>
+    <div class="detail-content" style="margin-top: 8px;">
+      <table class="flow-table">
+        <tr><th>Category</th><th>Extension</th><th>Channel</th><th>Escalation Trigger</th><th>Exit (90 days)</th></tr>
+        <tr><td>A (warm)</td><td>Monthly value content + quarterly personal check-in</td><td>Email + LinkedIn</td><td>Replies, clicks 3+ links, visits site</td><td>Re-engagement &rarr; archive</td></tr>
+        <tr><td>B (GTM)</td><td>Monthly GTM thought leadership</td><td>Email + LinkedIn</td><td>Engages with GTM content</td><td>Re-engagement &rarr; archive</td></tr>
+        <tr><td>C (timing)</td><td>Stay visible until stated date</td><td>Email + LinkedIn</td><td>Stated date arrives / funding signal</td><td>Second hard push &rarr; Cat D</td></tr>
+        <tr><td>D (brush-off)</td><td>Quarterly newsletter</td><td>Email only</td><td>Any engagement &rarr; re-score to Cat A</td><td>Stay on quarterly forever</td></tr>
+        <tr><td>E (referral)</td><td>Referral enters as new TOFU</td><td>Warm outbound</td><td>Referral books meeting</td><td>Standard TOFU exit</td></tr>
+        <tr><td>F (has solution)</td><td>Quarterly displacement + Clay signals</td><td>Email + signal alerts</td><td>Provider change / new funding</td><td>Stay on quarterly 12mo+</td></tr>
+        <tr><td>G (hiring)</td><td>Monthly hiring content</td><td>Email + LinkedIn</td><td>New SDR job posting appears</td><td>Re-engagement &rarr; archive</td></tr>
+      </table>
+    </div>
+  </details>
+</div>
+
+<!-- Arrow: MOFU to BOFU -->
+<div class="flow-connector">
+  <div class="flow-labels">
+    <span class="flow-label">Engagement signals feed back to HubSpot &rarr; lead score increases &rarr; MQL threshold (25+)</span>
+  </div>
+</div>
+<div class="flow-connector">
+  <div class="flow-arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+</div>
+
+<!-- ═══════════ BOFU ═══════════ -->
+<div class="phase phase-bofu">
+  <div class="phase-header">
+    <span class="phase-tag tag-bofu">BOFU</span>
+    <span class="phase-title">Bottom of Funnel &mdash; Signal-Based Alerts + Conversion</span>
+  </div>
+  <div class="tools-row">
+    <div class="tool-card tc-cas" style="background: rgba(220, 38, 38, 0.1);">
+      <h3>Clay Signal Monitor</h3>
+      <ul>
+        <li>Watches Discovery-stage companies for:</li>
+        <li>&nbsp;&nbsp;New funding round (Crunchbase)</li>
+        <li>&nbsp;&nbsp;Sales team job postings (LinkedIn)</li>
+        <li>&nbsp;&nbsp;Leadership changes (new CRO/VP Sales)</li>
+        <li>&nbsp;&nbsp;Competitor signals (provider switch)</li>
+        <li>&nbsp;&nbsp;Re-engagement (site visits, content clicks)</li>
+      </ul>
+    </div>
+    <div class="tool-card tc-hubspot">
+      <h3>Sales Alerts</h3>
+      <ul>
+        <li>Signal fires &rarr; HubSpot task created</li>
+        <li>Lead score hits 25+ &rarr; MQL alert</li>
+        <li>Meeting booked &rarr; Deal created</li>
+        <li>Follow-up templates per signal type</li>
+      </ul>
+    </div>
+    <div class="tool-card tc-slack">
+      <h3>Slack Notifications</h3>
+      <ul>
+        <li>MQL alerts to sales channel</li>
+        <li>Meeting booked notifications</li>
+        <li>Signal-based alerts (funding, hiring)</li>
+        <li>Weekly summary digests</li>
+      </ul>
+    </div>
+    <div class="tool-card tc-webflow">
+      <h3>Webflow (Future)</h3>
+      <ul>
+        <li>Form fills &rarr; HubSpot contacts</li>
+        <li>HubSpot tracking code on site</li>
+        <li>Reverse-IP visitor intelligence</li>
+        <li>Meeting booking embed</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ BRIDGING LOGIC ═══════════ -->
+<div class="bridging">
+  <h2>Lead Journey: TOFU &rarr; C&S Disposition &rarr; Category &rarr; MOFU &rarr; BOFU</h2>
+  <p style="font-size: 11px; color: var(--text-dim); margin-bottom: 14px;">This is the bridging logic that connects the test plan to the nurture engine. Two layers: Layer 1 (C&S sequences for 171 existing leads), Layer 2 (TOFU test sequences for 3,000 new contacts).</p>
+
+  <div class="bridge-flow">
+    <div class="bridge-step" style="background: rgba(124, 58, 237, 0.15);">
+      <h4>Clay List</h4>
+      <p>3,000 contacts built, enriched, split into 3 groups of 1,000</p>
+    </div>
+    <div class="bridge-arrow">&rarr;</div>
+    <div class="bridge-step" style="background: rgba(10, 102, 194, 0.15);">
+      <h4>LinkedIn Ads</h4>
+      <p>Tests A+B get 2-3 weeks warm-up. Test C skips.</p>
+    </div>
+    <div class="bridge-arrow">&rarr;</div>
+    <div class="bridge-step" style="background: rgba(234, 88, 12, 0.15);">
+      <h4>Outbound</h4>
+      <p>Test A: emails first. Test B+C: calls first. Via Instantly + C&S.</p>
+    </div>
+    <div class="bridge-arrow">&rarr;</div>
+    <div class="bridge-step" style="background: rgba(220, 38, 38, 0.15);">
+      <h4>C&S Disposition</h4>
+      <p>SDR tags outcome: SE-Soft Interest, SE-GTM, SE-Not Now, SE-Referral, etc.</p>
+    </div>
+    <div class="bridge-arrow">&rarr;</div>
+    <div class="bridge-step" style="background: rgba(255, 122, 89, 0.15);">
+      <h4>HubSpot Property</h4>
+      <p>Tag mapped to nurture_category (A-G) + tofu_call_outcome</p>
+    </div>
+    <div class="bridge-arrow">&rarr;</div>
+    <div class="bridge-step" style="background: rgba(245, 158, 11, 0.15);">
+      <h4>Workflow Trigger</h4>
+      <p>Property change fires workflow. Auto-enrols in correct sequence.</p>
+    </div>
+    <div class="bridge-arrow">&rarr;</div>
+    <div class="bridge-step" style="background: rgba(5, 150, 105, 0.15);">
+      <h4>Category Sequence</h4>
+      <p>A-G specific cadence, content, channel. From Sully's mailbox.</p>
+    </div>
+    <div class="bridge-arrow">&rarr;</div>
+    <div class="bridge-step" style="background: rgba(220, 38, 38, 0.15);">
+      <h4>Convert or Extend</h4>
+      <p>Books meeting &rarr; BOFU. No convert &rarr; MOFU extension (30-90d).</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ DATA FLOWS TABLE ═══════════ -->
+<div class="data-flows">
+  <h2>Tech Tool Integration Map &mdash; All Data Flows</h2>
+  <table class="flow-table">
+    <tr>
+      <th>#</th>
+      <th>From</th>
+      <th>To</th>
+      <th>What Flows</th>
+      <th>How</th>
+      <th>Status</th>
+    </tr>
+    <tr>
+      <td><span class="flow-num">1</span></td>
+      <td>Clay</td>
+      <td>LinkedIn CM</td>
+      <td>CSV matched audience (LinkedIn URLs) for ad targeting</td>
+      <td>Manual CSV upload</td>
+      <td><span class="status-badge status-planned">Planned</span></td>
+    </tr>
+    <tr>
+      <td><span class="flow-num">2</span></td>
+      <td>Clay</td>
+      <td>Instantly</td>
+      <td>Verified email lists for cold email campaigns</td>
+      <td>CSV export / Clay integration</td>
+      <td><span class="status-badge status-live">Live</span></td>
+    </tr>
+    <tr>
+      <td><span class="flow-num">3</span></td>
+      <td>Clay</td>
+      <td>HubSpot</td>
+      <td>Enriched contacts with all properties</td>
+      <td>Native Clay-HubSpot integration or CSV</td>
+      <td><span class="status-badge status-live">Live</span></td>
+    </tr>
+    <tr>
+      <td><span class="flow-num">4</span></td>
+      <td>Clay</td>
+      <td>Connect & Sell</td>
+      <td>Phone lists for parallel dialling</td>
+      <td>CSV export</td>
+      <td><span class="status-badge status-live">Live</span></td>
+    </tr>
+    <tr>
+      <td><span class="flow-num">5</span></td>
+      <td>Connect & Sell</td>
+      <td>HubSpot</td>
+      <td>Call outcomes + SDR disposition tags (A-G categories)</td>
+      <td>SDR manual tagging in HubSpot post-call</td>
+      <td><span class="status-badge status-blocked">Blocked &mdash; needs SDR SOP</span></td>
+    </tr>
+    <tr>
+      <td><span class="flow-num">6</span></td>
+      <td>Instantly</td>
+      <td>HubSpot</td>
+      <td>Reply/interested signals</td>
+      <td>Webhook or manual</td>
+      <td><span class="status-badge status-blocked">Blocked &mdash; 986 unread replies</span></td>
+    </tr>
+    <tr>
+      <td><span class="flow-num">7</span></td>
+      <td>HubSpot Workflow</td>
+      <td>HubSpot Sequences</td>
+      <td>Auto-enrol contacts in category-specific nurture sequence</td>
+      <td>Workflow trigger on property change</td>
+      <td><span class="status-badge status-blocked">Blocked &mdash; needs Enterprise</span></td>
+    </tr>
+    <tr>
+      <td><span class="flow-num">8</span></td>
+      <td>Clay Signal Monitor</td>
+      <td>HubSpot</td>
+      <td>Intent signals (funding, hiring, leadership changes)</td>
+      <td>Webhook &rarr; create task + update contact</td>
+      <td><span class="status-badge status-planned">Planned</span></td>
+    </tr>
+    <tr>
+      <td><span class="flow-num">9</span></td>
+      <td>HubSpot</td>
+      <td>Slack</td>
+      <td>MQL alerts (score 25+), meeting booked notifications</td>
+      <td>HubSpot-Slack integration</td>
+      <td><span class="status-badge status-planned">Planned</span></td>
+    </tr>
+    <tr>
+      <td><span class="flow-num">10</span></td>
+      <td>HubSpot Sequences</td>
+      <td>Leads</td>
+      <td>Nurture emails per category (A-G) from Sully's mailbox</td>
+      <td>HubSpot Sequences (Enterprise)</td>
+      <td><span class="status-badge status-blocked">Blocked &mdash; needs Enterprise</span></td>
+    </tr>
+    <tr>
+      <td><span class="flow-num">11</span></td>
+      <td>MOFU engagement</td>
+      <td>HubSpot</td>
+      <td>Opens, clicks, replies feed back to lead score</td>
+      <td>Native HubSpot tracking</td>
+      <td><span class="status-badge status-planned">Auto when live</span></td>
+    </tr>
+    <tr>
+      <td><span class="flow-num">12</span></td>
+      <td>Webflow</td>
+      <td>HubSpot</td>
+      <td>Form fills + tracking code visitor intelligence</td>
+      <td>HubSpot tracking code embed</td>
+      <td><span class="status-badge status-future">Future</span></td>
+    </tr>
+    <tr>
+      <td><span class="flow-num">13</span></td>
+      <td>HubSpot</td>
+      <td>LinkedIn CM</td>
+      <td>Retargeting audiences from engaged/MQL contacts</td>
+      <td>CSV export or HubSpot-LinkedIn sync</td>
+      <td><span class="status-badge status-future">Future</span></td>
+    </tr>
+    <tr>
+      <td><span class="flow-num">14</span></td>
+      <td>Cat E referrals</td>
+      <td>TOFU re-entry</td>
+      <td>New contact created for referred person &rarr; enters warm outbound</td>
+      <td>Manual or workflow creates contact + triggers sequence</td>
+      <td><span class="status-badge status-planned">Designed</span></td>
+    </tr>
+    <tr>
+      <td><span class="flow-num">15</span></td>
+      <td>Cat F + Clay</td>
+      <td>BOFU alerts</td>
+      <td>"Has Solution" contacts monitored for displacement signals</td>
+      <td>Clay webhook &rarr; HubSpot task + Slack alert</td>
+      <td><span class="status-badge status-planned">Planned</span></td>
+    </tr>
+  </table>
+</div>
+
+<!-- ═══════════ BLOCKERS ═══════════ -->
+<div class="blockers">
+  <h2>Integration Blockers (Must Resolve Before Launch)</h2>
+  <div class="blocker-item">
+    <span class="blocker-icon">1.</span>
+    <div class="blocker-text"><strong>HubSpot Sales Enterprise upgrade</strong> &mdash; ~&pound;94.50/seat (+&pound;35/seat). Required for trigger-based workflow &rarr; sequence enrolment. Without this, all MOFU category routing is manual (max 50 contacts at a time). <em>Approved in principle, not yet purchased.</em></div>
+  </div>
+  <div class="blocker-item">
+    <span class="blocker-icon">2.</span>
+    <div class="blocker-text"><strong>SDR tagging SOP</strong> &mdash; SDRs need clear instructions on tagging call outcomes into HubSpot using the new disposition framework (A-G). Without this, leads don't flow into the right category sequences. <em>Needs writing + SDR briefing session.</em></div>
+  </div>
+  <div class="blocker-item">
+    <span class="blocker-icon">3.</span>
+    <div class="blocker-text"><strong>Instantly &rarr; HubSpot reply flow</strong> &mdash; 986 unread replies sitting in Instantly. Need webhook setup or manual process to push reply/interested signals into HubSpot. <em>Hard blocker for Test A attribution.</em></div>
+  </div>
+  <div class="blocker-item">
+    <span class="blocker-icon">4.</span>
+    <div class="blocker-text"><strong>Clay list email coverage</strong> &mdash; Toku Moku list has 2,988 contacts but 0% email coverage. Tests A & B can't run without verified emails. <em>Enrichment needed before launch.</em></div>
+  </div>
+</div>
+
+<p class="timestamp">Generated 10 Mar 2026 &mdash; Source: TSP-TOFU-Test-Plan.md, 07-Nurture-Category-Analysis.md, 08-Sequencing-Strategy.md, TSP-GTM-Tech-Stack.md, TSP-Marketing-Plan-2026-Q1.md</p>
+
+</body>
+</html>
